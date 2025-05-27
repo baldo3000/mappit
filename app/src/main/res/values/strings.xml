@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">MappIt</string>
     <string name="mainactivity_name">MappIt</string>
+
+    <!-- Auth -->
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_sign_up">Sign Up</string>
+    <string name="auth_sign_out">Sign Out</string>
+    <string name="auth_sign_up_go">New user? Sign Up</string>
+    <string name="auth_sign_in_go">Already have an account? Sign In</string>
 </resources>

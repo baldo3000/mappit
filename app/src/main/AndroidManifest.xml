@@ -16,6 +16,7 @@
         android:theme="@style/Theme.MappIt"
         tools:targetApi="36">
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/mainactivity_name"
