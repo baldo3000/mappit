@@ -7,6 +7,9 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 class AuthenticationRepository(
     private val auth: Auth
 ) {
+    val status
+        get() = auth.sessionStatus.value
+
     suspend fun signIn(email: String, password: String): Boolean {
         return try {
             auth.signInWith(Email) {

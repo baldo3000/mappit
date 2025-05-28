@@ -1,16 +1,12 @@
 package me.baldo.mappit.ui
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,8 +14,11 @@ import androidx.navigation.compose.composable
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.status.SessionSource
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import me.baldo.mappit.R
+import me.baldo.mappit.ui.composables.HomeOverlay
+import me.baldo.mappit.ui.composables.MenuOverlay
+import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.signin.SignInScreen
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
@@ -37,7 +36,16 @@ sealed interface MappItRoute {
     data object SignIn : MappItRoute
 
     @Serializable
-    data object HomeTest : MappItRoute
+    data object Home : MappItRoute
+
+    @Serializable
+    data object Settings : MappItRoute
+
+    @Serializable
+    data object Profile : MappItRoute
+
+    @Serializable
+    data object Discovery : MappItRoute
 }
 
 @Composable
@@ -49,16 +57,17 @@ fun MappItNavGraph(navController: NavHostController) {
             when (it) {
                 is SessionStatus.Authenticated -> {
                     Log.i(TAG, "User has authenticated: ${it.session.user?.email}")
+                    navController.navigate(MappItRoute.Home) { popUpTo(0) }
                     when (it.source) {
-                        SessionSource.External -> TODO()
-                        is SessionSource.Refresh -> TODO()
-                        is SessionSource.SignIn -> {navController.navigate(MappItRoute.HomeTest) }
-                        is SessionSource.SignUp -> {navController.navigate(MappItRoute.HomeTest) }
-                        SessionSource.Storage -> {navController.navigate(MappItRoute.HomeTest) }
-                        SessionSource.Unknown -> TODO()
-                        is SessionSource.UserChanged -> TODO()
-                        is SessionSource.UserIdentitiesChanged -> TODO()
-                        SessionSource.AnonymousSignIn -> TODO()
+                        SessionSource.External -> {}
+                        is SessionSource.SignIn -> {}
+                        is SessionSource.SignUp -> {}
+                        SessionSource.Storage -> {}
+                        SessionSource.Unknown -> {}
+                        is SessionSource.UserChanged -> {}
+                        is SessionSource.UserIdentitiesChanged -> {}
+                        SessionSource.AnonymousSignIn -> {}
+                        is SessionSource.Refresh -> {}
                     }
                 }
 
@@ -70,20 +79,40 @@ fun MappItNavGraph(navController: NavHostController) {
                 is SessionStatus.NotAuthenticated -> {
                     if (it.isSignOut) {
                         Log.i(TAG, "User signed out")
-                        navController.navigate(MappItRoute.SignIn)
+                        navController.navigate(MappItRoute.SignIn) { popUpTo(0) }
                     } else {
                         Log.i(TAG, "User not signed in")
+                        navController.navigate(MappItRoute.SignIn) { popUpTo(0) }
                     }
                 }
             }
         }
     }
-    val scope = rememberCoroutineScope()
 
     NavHost(
-        startDestination = MappItRoute.SignIn,
-        navController = navController
+        startDestination = MappItRoute.Home,
+        navController = navController,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
     ) {
+        composable<MappItRoute.Home> {
+            HomeOverlay(BottomBarTab.Home, navController) {
+                HomeScreen()
+            }
+        }
+
+        composable<MappItRoute.Discovery> {
+            HomeOverlay(BottomBarTab.Discovery, navController) {
+
+            }
+        }
+
+        composable<MappItRoute.Profile> {
+            HomeOverlay(BottomBarTab.Profile, navController) {
+
+            }
+        }
+
         composable<MappItRoute.SignUp> {
             val signUpVM = koinViewModel<SignUpViewModel>()
             val signUpState by signUpVM.state.collectAsStateWithLifecycle()
@@ -104,12 +133,9 @@ fun MappItNavGraph(navController: NavHostController) {
             )
         }
 
-        composable<MappItRoute.HomeTest> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Button({ scope.launch { auth.signOut() } }) { Text("Sign Out") }
+        composable<MappItRoute.Settings> {
+            MenuOverlay(stringResource(R.string.screen_settings), navController) {
+
             }
         }
     }
