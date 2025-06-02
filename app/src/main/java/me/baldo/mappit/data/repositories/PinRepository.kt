@@ -10,7 +10,11 @@ class PinRepository(
 ) {
     suspend fun getPins(): List<Pin> {
         return withContext(Dispatchers.IO) {
-            postgrest.from("pin").select().decodeList<Pin>()
+            try {
+                postgrest.from("pin").select().decodeList<Pin>()
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
     }
 }

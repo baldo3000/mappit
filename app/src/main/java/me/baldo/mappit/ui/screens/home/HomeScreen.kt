@@ -334,7 +334,7 @@ private fun Map(
             },
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
-            isMyLocationEnabled = true,
+            isMyLocationEnabled = false,
             mapType = MapType.NORMAL,
             // mapStyleOptions = MapStyleOptions.loadRawResourceStyle(ctx, R.raw.map_style_map),
             minZoomPreference = 8f,

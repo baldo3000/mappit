@@ -70,15 +70,17 @@ fun rememberMultiplePermissions(
                 permissionLauncher.launch(permissions.toTypedArray())
 
             override fun updateStatuses() {
-                statuses = permissions.associateWith { permission ->
-                    if (ContextCompat.checkSelfPermission(
-                            activity,
-                            permission
-                        ) == PackageManager.PERMISSION_GRANTED
-                    )
-                        PermissionStatus.Granted
-                    else
-                        statuses[permission]!!
+                if (!statuses.isEmpty()) {
+                    statuses = permissions.associateWith { permission ->
+                        if (ContextCompat.checkSelfPermission(
+                                activity,
+                                permission
+                            ) == PackageManager.PERMISSION_GRANTED
+                        )
+                            PermissionStatus.Granted
+                        else
+                            statuses[permission]!!
+                    }
                 }
             }
 

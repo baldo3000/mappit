@@ -57,10 +57,10 @@ class HomeViewModel(
         override fun disableAllWarnings() {
             _state.update {
                 it.copy(
-                    showLocationDisabledWarning = false,
+                    // showLocationDisabledWarning = false,
                     showLocationPermissionDeniedWarning = false,
                     showLocationPermissionPermanentlyDeniedWarning = false,
-                    showNoInternetConnectivityWarning = false
+                    // showNoInternetConnectivityWarning = false
                 )
             }
         }

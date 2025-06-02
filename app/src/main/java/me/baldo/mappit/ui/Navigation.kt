@@ -98,6 +98,9 @@ fun MappItNavGraph(navController: NavHostController) {
         }
     }
 
+    val homeVM = koinViewModel<HomeViewModel>()
+    val homeState by homeVM.state.collectAsStateWithLifecycle()
+
     NavHost(
         startDestination = MappItRoute.Dummy,
         navController = navController,
@@ -106,8 +109,6 @@ fun MappItNavGraph(navController: NavHostController) {
     ) {
         composable<MappItRoute.Home> {
             HomeOverlay(BottomBarTab.Home, navController) { innerPadding ->
-                val homeVM = koinViewModel<HomeViewModel>()
-                val homeState by homeVM.state.collectAsStateWithLifecycle()
                 HomeScreen(homeState, homeVM.actions, Modifier.padding(innerPadding))
             }
         }
