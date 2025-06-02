@@ -9,6 +9,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -65,18 +66,21 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerInfoWindowComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.launch
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
+import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
 import me.baldo.mappit.utils.isLocationEnabled
 import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
+import kotlin.math.pow
 
 private const val INTERACTION_DISTANCE = 100.0
 
@@ -240,7 +244,7 @@ private fun Map(
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
-    // val locationService = remember { LocationService(ctx) }
+    val locationService = remember { LocationService(ctx) }
     val scope = rememberCoroutineScope()
     val fusedLocationClient = remember { getFusedLocationProviderClient(ctx) }
     val locationCallback = remember {
@@ -264,6 +268,20 @@ private fun Map(
                         return
                     }
                 }
+            }
+        }
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_START) {
+        scope.launch {
+            locationService.getCurrentLocation()?.let { newPosition ->
+                cameraPositionState.position =
+                    CameraPosition(
+                        LatLng(newPosition.latitude, newPosition.longitude),
+                        cameraPositionState.position.zoom,
+                        cameraPositionState.position.tilt,
+                        cameraPositionState.position.bearing
+                    )
             }
         }
     }
@@ -374,6 +392,13 @@ private fun Map(
         }
 
         // Draw a black circle around the user's location
+        Circle(
+            center = cameraPositionState.position.target,
+            radius = 4.0,
+            fillColor = Color.Blue,
+            strokeColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+            strokeWidth = 5f
+        )
         Circle(
             center = cameraPositionState.position.target,
             radius = INTERACTION_DISTANCE,
