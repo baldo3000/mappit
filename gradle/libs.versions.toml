@@ -15,8 +15,12 @@ navigation = "2.9.0"
 materialIconsExtended = "1.7.8"
 material3 = "1.3.2"
 material = "1.12.0"
+mapsCompose = "6.6.0"
+kotlinxCoroutinesPlayServices = "1.10.2"
+playServicesLocation = "21.3.0"
 
 [libraries]
+android-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 auth-kt = { module = "io.github.jan-tennert.supabase:auth-kt", version.ref = "supabase" }
 bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
@@ -42,6 +46,8 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 material = { module = "com.google.android.material:material", version.ref = "material" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "supabase" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

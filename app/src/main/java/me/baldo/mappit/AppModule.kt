@@ -13,6 +13,7 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.PinRepository
+import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.core.module.dsl.viewModel
@@ -44,4 +45,5 @@ val appModule = module {
 
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
+    viewModel { HomeViewModel(get()) }
 }

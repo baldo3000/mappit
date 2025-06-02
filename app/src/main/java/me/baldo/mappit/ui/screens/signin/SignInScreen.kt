@@ -79,7 +79,7 @@ fun SignInScreen(
             Button(
                 onClick = signInActions::signIn,
                 enabled = authState.validForm
-            ) { Text(stringResource(R.string.auth_sign_up)) }
+            ) { Text(stringResource(R.string.auth_sign_in)) }
         }
     }
 }

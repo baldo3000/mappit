@@ -3,9 +3,14 @@ package me.baldo.mappit.ui
 import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -19,6 +24,7 @@ import me.baldo.mappit.R
 import me.baldo.mappit.ui.composables.HomeOverlay
 import me.baldo.mappit.ui.composables.MenuOverlay
 import me.baldo.mappit.ui.screens.home.HomeScreen
+import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.signin.SignInScreen
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
@@ -29,6 +35,9 @@ import org.koin.compose.koinInject
 private const val TAG = "NavGraph"
 
 sealed interface MappItRoute {
+    @Serializable
+    data object Dummy : MappItRoute
+
     @Serializable
     data object SignUp : MappItRoute
 
@@ -90,14 +99,16 @@ fun MappItNavGraph(navController: NavHostController) {
     }
 
     NavHost(
-        startDestination = MappItRoute.Home,
+        startDestination = MappItRoute.Dummy,
         navController = navController,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None }
     ) {
         composable<MappItRoute.Home> {
-            HomeOverlay(BottomBarTab.Home, navController) {
-                HomeScreen()
+            HomeOverlay(BottomBarTab.Home, navController) { innerPadding ->
+                val homeVM = koinViewModel<HomeViewModel>()
+                val homeState by homeVM.state.collectAsStateWithLifecycle()
+                HomeScreen(homeState, homeVM.actions, Modifier.padding(innerPadding))
             }
         }
 
@@ -111,6 +122,10 @@ fun MappItNavGraph(navController: NavHostController) {
             HomeOverlay(BottomBarTab.Profile, navController) {
 
             }
+        }
+
+        composable<MappItRoute.Dummy> {
+            Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainer))
         }
 
         composable<MappItRoute.SignUp> {

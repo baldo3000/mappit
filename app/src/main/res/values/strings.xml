@@ -19,4 +19,24 @@
     <string name="auth_sign_out">Sign Out</string>
     <string name="auth_sign_up_go">New user? Sign Up</string>
     <string name="auth_sign_in_go">Already have an account? Sign In</string>
+
+    <!-- Home -->
+    <string name="home_location_disabled">Location is disabled</string>
+    <string name="home_location_disabled_explanation">Location needs to be on in order to display the map</string>
+    <string name="home_location_disabled_button">Open Location settings</string>
+
+    <string name="home_location_permissions_missing">Location permission is missing</string>
+    <string name="home_location_permissions_missing_explanation">You have previously denied permission. Location permission is needed in order to display the map</string>
+    <string name="home_location_permissions_missing_button">Grant location permissions</string>
+
+    <string name="home_location_permissions_missing_permanently">Location permission is missing</string>
+    <string name="home_location_permissions_missing_permanently_explanation">You have permanently denied permission. Location permission is needed in order to display the map</string>
+    <string name="home_location_permissions_missing_permanently_button">Open application info</string>
+
+    <string name="home_internet_disabled">Not connected to Internet</string>
+    <string name="home_internet_disabled_explanation">You need to be connected to the Internet in order to display the map</string>
+    <string name="home_internet_disabled_button">Open Internet settings</string>
+
+    <string name="home_incline_visual">Incline visual</string>
+    <string name="home_straighten_visual">Straighten visual</string>
 </resources>
