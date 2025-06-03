@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.Pin
+import me.baldo.mappit.data.repositories.CameraPositionDto
+import me.baldo.mappit.data.repositories.CameraRepository
 import me.baldo.mappit.data.repositories.PinRepository
 
 data class HomeState(
     val pins: List<Pin> = emptyList(),
+    val savedCameraPosition: CameraPositionDto = CameraPositionDto(0.0, 0.0, 0f, 0f),
     val showLocationDisabledWarning: Boolean = false,
     val showLocationPermissionDeniedWarning: Boolean = false,
     val showLocationPermissionPermanentlyDeniedWarning: Boolean = false,
@@ -18,6 +22,7 @@ data class HomeState(
 )
 
 interface HomeActions {
+    fun saveCameraPosition(cameraPosition: CameraPositionDto)
     fun setShowLocationDisabledWarning(show: Boolean)
     fun setShowLocationPermissionDeniedWarning(show: Boolean)
     fun setShowLocationPermissionPermanentlyDeniedWarning(show: Boolean)
@@ -26,18 +31,28 @@ interface HomeActions {
 }
 
 class HomeViewModel(
-    private val pinRepository: PinRepository
+    private val pinRepository: PinRepository,
+    private val cameraRepository: CameraRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
+            _state.update { it.copy(savedCameraPosition = cameraRepository.cameraPosition.first()) }
+        }
+        viewModelScope.launch {
             _state.update { it.copy(pins = pinRepository.getPins()) }
         }
     }
 
     val actions = object : HomeActions {
+        override fun saveCameraPosition(cameraPosition: CameraPositionDto) {
+            viewModelScope.launch {
+                cameraRepository.setCameraPosition(cameraPosition)
+            }
+        }
+
         override fun setShowLocationDisabledWarning(show: Boolean) {
             _state.update { it.copy(showLocationDisabledWarning = show) }
         }

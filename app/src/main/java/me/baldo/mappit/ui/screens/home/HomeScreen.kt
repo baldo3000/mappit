@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CloseFullscreen
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.GpsOff
@@ -66,13 +66,13 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerInfoWindowComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.launch
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
+import me.baldo.mappit.data.repositories.CameraPositionDto
 import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
 import me.baldo.mappit.utils.isLocationEnabled
@@ -80,7 +80,6 @@ import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
-import kotlin.math.pow
 
 private const val INTERACTION_DISTANCE = 100.0
 
@@ -176,6 +175,8 @@ fun HomeScreen(
         else ->
             MapOverlay(
                 pins = homeState.pins,
+                savedCameraPosition = homeState.savedCameraPosition,
+                saveCameraPosition = homeActions::saveCameraPosition,
                 modifier = modifier
             )
     }
@@ -185,51 +186,72 @@ fun HomeScreen(
 @Composable
 private fun MapOverlay(
     pins: List<Pin>,
+    savedCameraPosition: CameraPositionDto,
+    saveCameraPosition: (CameraPositionDto) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(42.7189196, 12.8998566), 18f)
+        position = CameraPosition(
+            LatLng(savedCameraPosition.latitude, savedCameraPosition.longitude),
+            savedCameraPosition.zoom,
+            60f,
+            savedCameraPosition.bearing
+        )
     }
     val scope = rememberCoroutineScope()
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        saveCameraPosition(
+            CameraPositionDto(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude,
+                cameraPositionState.position.zoom,
+                cameraPositionState.position.bearing
+            )
+        )
+    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButtonPosition = FabPosition.Start,
         floatingActionButton = {
-            if (!visualInclined) {
-                InclineCameraFAB {
-                    val position = CameraPosition(
-                        cameraPositionState.position.target,
-                        cameraPositionState.position.zoom,
-                        45f,
-                        cameraPositionState.position.bearing
-                    )
-                    scope.launch {
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newCameraPosition(
-                                position
-                            )
+            Column {
+                if (!visualInclined) {
+                    InclineCameraFAB {
+                        val position = CameraPosition(
+                            cameraPositionState.position.target,
+                            cameraPositionState.position.zoom,
+                            60f,
+                            cameraPositionState.position.bearing
                         )
-                    }
-                    visualInclined = true
-                }
-            } else {
-                StraightenCameraFAB {
-                    val position = CameraPosition(
-                        cameraPositionState.position.target,
-                        cameraPositionState.position.zoom,
-                        0f,
-                        cameraPositionState.position.bearing
-                    )
-                    scope.launch {
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newCameraPosition(
-                                position
+                        scope.launch {
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newCameraPosition(
+                                    position
+                                )
                             )
-                        )
+                        }
+                        visualInclined = true
                     }
-                    visualInclined = false
+                } else {
+                    StraightenCameraFAB {
+                        val position = CameraPosition(
+                            cameraPositionState.position.target,
+                            cameraPositionState.position.zoom,
+                            0f,
+                            cameraPositionState.position.bearing
+                        )
+                        scope.launch {
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newCameraPosition(
+                                    position
+                                )
+                            )
+                        }
+                        visualInclined = false
+                    }
                 }
+                Spacer(Modifier.height(16.dp))
+                AddPinFAB { }
             }
         },
     ) {
@@ -299,13 +321,6 @@ private fun Map(
                 Looper.getMainLooper()
             )
         }
-        val position = CameraPosition(
-            cameraPositionState.position.target,
-            cameraPositionState.position.zoom,
-            45f,
-            cameraPositionState.position.bearing
-        )
-        cameraPositionState.position = position
     }
 
     // Stop location updates when exiting the Map route
@@ -316,9 +331,8 @@ private fun Map(
     }
 
     // Update camera when either location or bearing changes
-    var bearing by remember { mutableFloatStateOf(0f) }
+    var bearing by remember { mutableFloatStateOf(cameraPositionState.position.bearing) }
     LaunchedEffect(bearing) {
-        Log.i("TAG", "Bearing: $bearing")
         val position = CameraPosition(
             cameraPositionState.position.target,
             cameraPositionState.position.zoom,
@@ -352,6 +366,7 @@ private fun Map(
             },
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
+            isBuildingEnabled = true,
             isMyLocationEnabled = false,
             mapType = MapType.NORMAL,
             // mapStyleOptions = MapStyleOptions.loadRawResourceStyle(ctx, R.raw.map_style_map),
@@ -380,7 +395,8 @@ private fun Map(
                 // },
                 // onInfoWindowClick = { selectedTree = tree; showTreeDialog = true },
                 // onInfoWindowClose = { selectedTree = null },
-                infoContent = { Text("Text example") }
+                infoContent = { Text("Text example") },
+                onClick = { true }
             ) {
                 // Icon(
                 //     painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -429,11 +445,26 @@ private fun StraightenCameraFAB(
     onClick: () -> Unit
 ) {
     FloatingActionButton(
-        onClick = onClick
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Icon(
             Icons.Outlined.OpenInFull,
             stringResource(R.string.home_straighten_visual)
+        )
+    }
+}
+
+@Composable
+private fun AddPinFAB(
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = onClick
+    ) {
+        Icon(
+            Icons.Outlined.Add,
+            stringResource(R.string.home_add_pin)
         )
     }
 }

@@ -39,4 +39,5 @@
 
     <string name="home_incline_visual">Incline visual</string>
     <string name="home_straighten_visual">Straighten visual</string>
+    <string name="home_add_pin">Add pin</string>
 </resources>
