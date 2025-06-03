@@ -23,6 +23,8 @@ import kotlinx.serialization.Serializable
 import me.baldo.mappit.R
 import me.baldo.mappit.ui.composables.HomeOverlay
 import me.baldo.mappit.ui.composables.MenuOverlay
+import me.baldo.mappit.ui.screens.addpin.AddPinScreen
+import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
 import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.signin.SignInScreen
@@ -49,6 +51,9 @@ sealed interface MappItRoute {
 
     @Serializable
     data object Settings : MappItRoute
+
+    @Serializable
+    data object AddPin : MappItRoute
 
     @Serializable
     data object Profile : MappItRoute
@@ -109,7 +114,12 @@ fun MappItNavGraph(navController: NavHostController) {
     ) {
         composable<MappItRoute.Home> {
             HomeOverlay(BottomBarTab.Home, navController) { innerPadding ->
-                HomeScreen(homeState, homeVM.actions, Modifier.padding(innerPadding))
+                HomeScreen(
+                    homeState,
+                    homeVM.actions,
+                    onAddPin = { navController.navigate(MappItRoute.AddPin) },
+                    Modifier.padding(innerPadding)
+                )
             }
         }
 
@@ -152,6 +162,20 @@ fun MappItNavGraph(navController: NavHostController) {
         composable<MappItRoute.Settings> {
             MenuOverlay(stringResource(R.string.screen_settings), navController) {
 
+            }
+        }
+
+        composable<MappItRoute.AddPin> {
+            val addPinViewModel = koinViewModel<AddPinViewModel>()
+            val addPinState by addPinViewModel.state.collectAsStateWithLifecycle()
+
+            MenuOverlay(stringResource(R.string.screen_add_pin), navController) {
+                AddPinScreen(
+                    addPinState = addPinState,
+                    addPinActions = addPinViewModel.actions,
+                    onPinAdd = { navController.navigateUp() },
+                    modifier = Modifier.padding(it)
+                )
             }
         }
     }

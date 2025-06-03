@@ -10,6 +10,7 @@
     <string name="screen_settings">Settings</string>
     <string name="screen_profile">Profile</string>
     <string name="screen_discovery">Discovery</string>
+    <string name="screen_add_pin">Add Pin</string>
 
     <!-- Auth -->
     <string name="auth_email">Email</string>
@@ -40,4 +41,11 @@
     <string name="home_incline_visual">Incline visual</string>
     <string name="home_straighten_visual">Straighten visual</string>
     <string name="home_add_pin">Add pin</string>
+
+    <!-- Add Pin -->
+    <string name="add_pin_header">What\'s on your mind?</string>
+    <string name="add_pin_title">Title</string>
+    <string name="add_pin_description">Description</string>
+    <string name="add_pin_add">Add Pin</string>
+    <string name="add_pin_error">Error adding the pin</string>
 </resources>

@@ -3,12 +3,13 @@ package me.baldo.mappit.data.repositories
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionStatus
 
 class AuthenticationRepository(
     private val auth: Auth
 ) {
-    val status
-        get() = auth.sessionStatus.value
+    val userId: String?
+        get() = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user?.id
 
     suspend fun signIn(email: String, password: String): Boolean {
         return try {

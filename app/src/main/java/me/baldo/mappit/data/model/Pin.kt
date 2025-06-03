@@ -16,5 +16,21 @@ data class Pin(
     @SerialName("latitude")
     val latitude: Double,
     @SerialName("longitude")
-    val longitude: Double
+    val longitude: Double,
+    @SerialName("user_id")
+    val userId: String,
+)
+
+@Serializable
+data class AutoCompletePin(
+    @SerialName("title")
+    val title: String,
+    @SerialName("description")
+    val description: String,
+    @SerialName("latitude")
+    val latitude: Double,
+    @SerialName("longitude")
+    val longitude: Double,
+    @SerialName("user_id")
+    val userId: String,
 )

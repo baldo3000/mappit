@@ -1,5 +1,6 @@
 package me.baldo.mappit.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +44,7 @@ class HomeViewModel(
         }
         viewModelScope.launch {
             _state.update { it.copy(pins = pinRepository.getPins()) }
+            Log.i("TAG", "Pins loaded: ${_state.value.pins}")
         }
     }
 

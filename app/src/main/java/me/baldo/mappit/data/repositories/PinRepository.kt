@@ -3,6 +3,7 @@ package me.baldo.mappit.data.repositories
 import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.model.Pin
 
 class PinRepository(
@@ -14,6 +15,15 @@ class PinRepository(
                 postgrest.from("pin").select().decodeList<Pin>()
             } catch (e: Exception) {
                 emptyList()
+            }
+        }
+    }
+
+    suspend fun upsertPin(pin: AutoCompletePin) {
+        return withContext(Dispatchers.IO) {
+            try {
+                postgrest.from("pin").upsert(pin)
+            } catch (e: Exception) {
             }
         }
     }

@@ -87,6 +87,7 @@ private const val INTERACTION_DISTANCE = 100.0
 fun HomeScreen(
     homeState: HomeState,
     homeActions: HomeActions,
+    onAddPin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -177,6 +178,7 @@ fun HomeScreen(
                 pins = homeState.pins,
                 savedCameraPosition = homeState.savedCameraPosition,
                 saveCameraPosition = homeActions::saveCameraPosition,
+                onAddPin = onAddPin,
                 modifier = modifier
             )
     }
@@ -188,6 +190,7 @@ private fun MapOverlay(
     pins: List<Pin>,
     savedCameraPosition: CameraPositionDto,
     saveCameraPosition: (CameraPositionDto) -> Unit,
+    onAddPin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
@@ -251,7 +254,7 @@ private fun MapOverlay(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                AddPinFAB { }
+                AddPinFAB { onAddPin() }
             }
         },
     ) {
