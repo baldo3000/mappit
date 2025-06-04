@@ -11,22 +11,32 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloseFullscreen
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.GpsOff
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.PinDrop
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -88,6 +98,7 @@ fun HomeScreen(
     homeState: HomeState,
     homeActions: HomeActions,
     onAddPin: () -> Unit,
+    onPinInfo: (pinId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -179,6 +190,7 @@ fun HomeScreen(
                 savedCameraPosition = homeState.savedCameraPosition,
                 saveCameraPosition = homeActions::saveCameraPosition,
                 onAddPin = onAddPin,
+                onPinInfo = onPinInfo,
                 modifier = modifier
             )
     }
@@ -191,6 +203,7 @@ private fun MapOverlay(
     savedCameraPosition: CameraPositionDto,
     saveCameraPosition: (CameraPositionDto) -> Unit,
     onAddPin: () -> Unit,
+    onPinInfo: (pinId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
@@ -258,19 +271,21 @@ private fun MapOverlay(
             }
         },
     ) {
-        Map(pins, cameraPositionState)
+        Map(pins, onPinInfo, cameraPositionState)
     }
 }
 
 @Composable
 private fun Map(
     pins: List<Pin>,
+    onPinInfo: (pinId: Long) -> Unit,
     cameraPositionState: CameraPositionState,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
     val locationService = remember { LocationService(ctx) }
     val scope = rememberCoroutineScope()
+    var selectedPin by remember { mutableStateOf<Pin?>(null) }
     val fusedLocationClient = remember { getFusedLocationProviderClient(ctx) }
     val locationCallback = remember {
         object : LocationCallback() {
@@ -390,16 +405,10 @@ private fun Map(
         for (pin in pins) {
             MarkerInfoWindowComposable(
                 state = rememberUpdatedMarkerState(LatLng(pin.latitude, pin.longitude)),
-                // onClick = { marker ->
-                //     selectedTreePosition = marker.position
-                //     selectedTree = tree
-                //     showTreeDialog = currentIsFollowingUser
-                //     currentIsFollowingUser
-                // },
-                // onInfoWindowClick = { selectedTree = tree; showTreeDialog = true },
-                // onInfoWindowClose = { selectedTree = null },
-                infoContent = { Text("Text example") },
-                onClick = { true }
+                onClick = {
+                    selectedPin = pin
+                    true
+                }
             ) {
                 // Icon(
                 //     painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -426,6 +435,65 @@ private fun Map(
             strokeWidth = 3f
         )
     }
+
+    selectedPin?.let {
+        PinInfoDialog(
+            pin = it,
+            onDismiss = { selectedPin = null },
+            onPinInfo = {
+                onPinInfo(it.id)
+                selectedPin = null
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun PinInfoDialog(
+    pin: Pin,
+    onDismiss: () -> Unit,
+    onPinInfo: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = pin.title)
+                IconButton(
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    ),
+                    onClick = onDismiss,
+                    shapes = IconButtonDefaults.shapes()
+                ) {
+                    Icon(
+                        Icons.Outlined.Close,
+                        stringResource(R.string.home_pin_close)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            val text = stringResource(R.string.home_pin_info)
+            Button(
+                onClick = onPinInfo,
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Icon(
+                    Icons.Outlined.Info,
+                    stringResource(R.string.home_pin_info)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(text)
+            }
+        }
+    )
 }
 
 @Composable

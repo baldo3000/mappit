@@ -10,13 +10,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.status.SessionSource
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -28,12 +28,15 @@ import me.baldo.mappit.ui.screens.addpin.AddPinScreen
 import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
 import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
+import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
+import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
 import me.baldo.mappit.ui.screens.signin.SignInScreen
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 private const val TAG = "NavGraph"
 
@@ -61,6 +64,9 @@ sealed interface MappItRoute {
 
     @Serializable
     data object Discovery : MappItRoute
+
+    @Serializable
+    data class PinInfo(val pinId: Long) : MappItRoute
 }
 
 @Composable
@@ -120,6 +126,7 @@ fun MappItNavGraph(navController: NavHostController) {
                     homeState,
                     homeVM.actions,
                     onAddPin = { navController.navigate(MappItRoute.AddPin) },
+                    onPinInfo = { navController.navigate(MappItRoute.PinInfo(it)) },
                     Modifier.padding(innerPadding)
                 )
             }
@@ -178,6 +185,16 @@ fun MappItNavGraph(navController: NavHostController) {
                     onPinAdd = { navController.navigateUp() },
                     modifier = Modifier.padding(it)
                 )
+            }
+        }
+
+        composable<MappItRoute.PinInfo> { backStackEntry ->
+            val pinId = backStackEntry.toRoute<MappItRoute.PinInfo>().pinId
+            val pinInfoVM = koinViewModel<PinInfoViewModel>(parameters = { parametersOf(pinId) })
+            val pinInfoState by pinInfoVM.state.collectAsStateWithLifecycle()
+
+            MenuOverlay(stringResource(R.string.screen_pin_info), navController) {
+                PinInfoScreen(pinInfoState, pinInfoVM.actions, Modifier.padding(it))
             }
         }
     }

@@ -11,6 +11,7 @@
     <string name="screen_profile">Profile</string>
     <string name="screen_discovery">Discovery</string>
     <string name="screen_add_pin">Add Pin</string>
+    <string name="screen_pin_info">Pin Info</string>
 
     <!-- Auth -->
     <string name="auth_email">Email</string>
@@ -41,6 +42,8 @@
     <string name="home_incline_visual">Incline visual</string>
     <string name="home_straighten_visual">Straighten visual</string>
     <string name="home_add_pin">Add pin</string>
+    <string name="home_pin_info">Pin info</string>
+    <string name="home_pin_close">Close</string>
 
     <!-- Add Pin -->
     <string name="add_pin_header">What\'s on your mind?</string>
@@ -48,4 +51,9 @@
     <string name="add_pin_description">Description</string>
     <string name="add_pin_add">Add Pin</string>
     <string name="add_pin_error">Error adding the pin</string>
+
+    <!-- Pin Info -->
+    <string name="pin_info_edit">Edit Pin</string>
+    <string name="pin_info_error">No pin information available.</string>
+    <string name="pin_info_location">Pin locations</string>
 </resources>

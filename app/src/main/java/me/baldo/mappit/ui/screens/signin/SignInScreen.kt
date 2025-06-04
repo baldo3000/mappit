@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,7 +28,10 @@ import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
 import me.baldo.mappit.R
 
-@OptIn(AuthUiExperimental::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    AuthUiExperimental::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun SignInScreen(
     signInState: SignInState,
@@ -78,7 +83,8 @@ fun SignInScreen(
             Spacer(Modifier.height(4.dp))
             Button(
                 onClick = signInActions::signIn,
-                enabled = authState.validForm
+                enabled = authState.validForm,
+                shapes = ButtonDefaults.shapes()
             ) { Text(stringResource(R.string.auth_sign_in)) }
         }
     }

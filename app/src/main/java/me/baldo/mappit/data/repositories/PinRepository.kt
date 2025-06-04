@@ -9,6 +9,20 @@ import me.baldo.mappit.data.model.Pin
 class PinRepository(
     private val postgrest: Postgrest
 ) {
+    suspend fun getPin(pinId: Long): Pin? {
+        return withContext(Dispatchers.IO) {
+            try {
+                postgrest.from("pin").select() {
+                    filter {
+                        Pin::id eq pinId
+                    }
+                }.decodeSingleOrNull<Pin>()
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     suspend fun getPins(): List<Pin> {
         return withContext(Dispatchers.IO) {
             try {
