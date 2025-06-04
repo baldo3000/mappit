@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -85,6 +86,7 @@ import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
 import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
+import me.baldo.mappit.utils.calculateDistance
 import me.baldo.mappit.utils.isLocationEnabled
 import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
@@ -406,7 +408,15 @@ private fun Map(
             MarkerInfoWindowComposable(
                 state = rememberUpdatedMarkerState(LatLng(pin.latitude, pin.longitude)),
                 onClick = {
-                    selectedPin = pin
+                    if (calculateDistance(
+                            cameraPositionState.position.target,
+                            LatLng(pin.latitude, pin.longitude)
+                        ) <= INTERACTION_DISTANCE
+                    ) {
+                        selectedPin = pin
+                    } else {
+                        Toast.makeText(ctx, R.string.home_pin_get_closer, Toast.LENGTH_SHORT).show()
+                    }
                     true
                 }
             ) {
@@ -464,22 +474,9 @@ private fun PinInfoDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = pin.title)
-                IconButton(
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    ),
-                    onClick = onDismiss,
-                    shapes = IconButtonDefaults.shapes()
-                ) {
-                    Icon(
-                        Icons.Outlined.Close,
-                        stringResource(R.string.home_pin_close)
-                    )
-                }
             }
         },
-        confirmButton = {
+        dismissButton = {
             val text = stringResource(R.string.home_pin_info)
             Button(
                 onClick = onPinInfo,
@@ -491,6 +488,21 @@ private fun PinInfoDialog(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(text)
+            }
+        },
+        confirmButton = {
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                onClick = onDismiss,
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    Icons.Outlined.Close,
+                    stringResource(R.string.home_pin_close)
+                )
             }
         }
     )
