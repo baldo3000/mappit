@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -113,6 +114,7 @@ fun MappItNavGraph(navController: NavHostController) {
         exitTransition = { ExitTransition.None }
     ) {
         composable<MappItRoute.Home> {
+            homeVM.actions.updatePins()
             HomeOverlay(BottomBarTab.Home, navController) { innerPadding ->
                 HomeScreen(
                     homeState,

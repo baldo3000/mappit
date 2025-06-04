@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.compose.auth)
     implementation(libs.compose.auth.ui)
     implementation(libs.storage.kt)
+    implementation(libs.realtime.kt)
     implementation(libs.ktor.client.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.navigation.compose)

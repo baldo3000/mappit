@@ -23,6 +23,7 @@ data class HomeState(
 )
 
 interface HomeActions {
+    fun updatePins()
     fun saveCameraPosition(cameraPosition: CameraPositionDto)
     fun setShowLocationDisabledWarning(show: Boolean)
     fun setShowLocationPermissionDeniedWarning(show: Boolean)
@@ -33,22 +34,19 @@ interface HomeActions {
 
 class HomeViewModel(
     private val pinRepository: PinRepository,
-    private val cameraRepository: CameraRepository
+    private val cameraRepository: CameraRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            _state.update { it.copy(savedCameraPosition = cameraRepository.cameraPosition.first()) }
-        }
-        viewModelScope.launch {
-            _state.update { it.copy(pins = pinRepository.getPins()) }
-            Log.i("TAG", "Pins loaded: ${_state.value.pins}")
-        }
-    }
-
     val actions = object : HomeActions {
+        override fun updatePins() {
+            viewModelScope.launch {
+                _state.update { it.copy(pins = pinRepository.getPins()) }
+                Log.i("TAG", "Pins loaded: ${_state.value.pins}")
+            }
+        }
+
         override fun saveCameraPosition(cameraPosition: CameraPositionDto) {
             viewModelScope.launch {
                 cameraRepository.setCameraPosition(cameraPosition)
@@ -81,5 +79,12 @@ class HomeViewModel(
                 )
             }
         }
+    }
+
+    init {
+        viewModelScope.launch {
+            _state.update { it.copy(savedCameraPosition = cameraRepository.cameraPosition.first()) }
+        }
+        actions.updatePins()
     }
 }

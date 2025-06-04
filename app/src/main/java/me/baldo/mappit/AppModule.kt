@@ -11,6 +11,7 @@ import io.github.jan.supabase.compose.auth.composeAuth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import me.baldo.mappit.data.repositories.AuthenticationRepository
@@ -33,6 +34,7 @@ val appModule = module {
             supabaseKey = BuildConfig.SUPABASE_ANON_KEY
         ) {
             install(Postgrest)
+            install(Realtime)
             install(Auth) {
                 flowType = FlowType.PKCE
                 scheme = "app"
