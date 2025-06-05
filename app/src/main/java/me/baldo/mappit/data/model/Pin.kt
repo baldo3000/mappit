@@ -3,11 +3,10 @@ package me.baldo.mappit.data.model
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Serializable
-data class Pin @OptIn(ExperimentalUuidApi::class) constructor(
+data class Pin(
     @SerialName("id")
     val id: Uuid,
     @SerialName("created_at")
@@ -25,7 +24,7 @@ data class Pin @OptIn(ExperimentalUuidApi::class) constructor(
 )
 
 @Serializable
-data class AutoCompletePin @OptIn(ExperimentalUuidApi::class) constructor(
+data class AutoCompletePin(
     @SerialName("title")
     val title: String,
     @SerialName("description")

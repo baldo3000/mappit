@@ -25,12 +25,10 @@ import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 private val Context.dataStore by preferencesDataStore("map")
 
-@OptIn(ExperimentalUuidApi::class)
 val appModule = module {
     single { get<Context>().dataStore }
     single {

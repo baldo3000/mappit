@@ -37,7 +37,6 @@ import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 private const val TAG = "NavGraph"
@@ -71,7 +70,6 @@ sealed interface MappItRoute {
     data class PinInfo(val pinId: String) : MappItRoute
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun MappItNavGraph(navController: NavHostController) {
     val auth = koinInject<Auth>()

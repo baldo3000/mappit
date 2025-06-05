@@ -5,13 +5,11 @@ import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Profile
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UsersRepository(
     private val postgrest: Postgrest
 ) {
-    @OptIn(ExperimentalUuidApi::class)
     suspend fun getUser(id: Uuid): Profile? {
         return withContext(Dispatchers.IO) {
             try {

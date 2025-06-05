@@ -3,11 +3,10 @@ package me.baldo.mappit.data.model
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Serializable
-data class Profile @OptIn(ExperimentalUuidApi::class) constructor(
+data class Profile(
     @SerialName("id")
     val id: Uuid,
     @SerialName("username")

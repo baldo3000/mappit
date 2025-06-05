@@ -32,7 +32,6 @@ import androidx.compose.material.icons.outlined.PinDrop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -92,12 +91,10 @@ import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 private const val INTERACTION_DISTANCE = 100.0
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun HomeScreen(
     homeState: HomeState,
@@ -201,7 +198,6 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun MapOverlay(
@@ -281,7 +277,6 @@ private fun MapOverlay(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun Map(
     pins: List<Pin>,
@@ -463,7 +458,6 @@ private fun Map(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PinInfoDialog(
     pin: Pin,

@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class PinInfoState(
@@ -22,7 +21,6 @@ interface PinInfoActions {
 
 }
 
-@OptIn(ExperimentalUuidApi::class)
 class PinInfoViewModel(
     private val pinId: Uuid,
     private val pinsRepository: PinsRepository,

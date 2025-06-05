@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.PinsRepository
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface AddState {
@@ -40,7 +39,6 @@ class AddPinViewModel(
     private val _state = MutableStateFlow(AddPinState())
     val state = _state.asStateFlow()
 
-    @OptIn(ExperimentalUuidApi::class)
     val actions = object : AddPinActions {
         override fun onUpdateTitle(title: String) {
             _state.update { it.copy(title = title) }
