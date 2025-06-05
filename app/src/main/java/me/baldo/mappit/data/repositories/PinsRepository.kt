@@ -5,14 +5,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.model.Pin
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-class PinRepository(
+class PinsRepository(
     private val postgrest: Postgrest
 ) {
-    suspend fun getPin(pinId: Long): Pin? {
+    @OptIn(ExperimentalUuidApi::class)
+    suspend fun getPin(pinId: Uuid): Pin? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pin").select() {
+                postgrest.from("pins").select() {
                     filter {
                         Pin::id eq pinId
                     }
@@ -26,7 +29,7 @@ class PinRepository(
     suspend fun getPins(): List<Pin> {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pin").select().decodeList<Pin>()
+                postgrest.from("pins").select().decodeList<Pin>()
             } catch (e: Exception) {
                 emptyList()
             }
@@ -36,7 +39,7 @@ class PinRepository(
     suspend fun upsertPin(pin: AutoCompletePin) {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pin").upsert(pin)
+                postgrest.from("pins").upsert(pin)
             } catch (e: Exception) {
             }
         }

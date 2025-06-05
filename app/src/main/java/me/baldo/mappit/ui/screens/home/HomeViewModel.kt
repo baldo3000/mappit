@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
 import me.baldo.mappit.data.repositories.CameraRepository
-import me.baldo.mappit.data.repositories.PinRepository
+import me.baldo.mappit.data.repositories.PinsRepository
 
 data class HomeState(
     val pins: List<Pin> = emptyList(),
@@ -32,7 +32,7 @@ interface HomeActions {
 }
 
 class HomeViewModel(
-    private val pinRepository: PinRepository,
+    private val pinsRepository: PinsRepository,
     private val cameraRepository: CameraRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
@@ -41,7 +41,7 @@ class HomeViewModel(
     val actions = object : HomeActions {
         override fun updatePins() {
             viewModelScope.launch {
-                _state.update { it.copy(pins = pinRepository.getPins()) }
+                _state.update { it.copy(pins = pinsRepository.getPins()) }
             }
         }
 

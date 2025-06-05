@@ -4,12 +4,13 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.auth.user.UserInfo
 
 class AuthenticationRepository(
     private val auth: Auth
 ) {
-    val userId: String?
-        get() = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user?.id
+    val user: UserInfo?
+        get() = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user
 
     suspend fun signIn(email: String, password: String): Boolean {
         return try {
@@ -31,6 +32,7 @@ class AuthenticationRepository(
             }
             true
         } catch (e: Exception) {
+            throw e
             false
         }
     }

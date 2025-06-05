@@ -92,15 +92,18 @@ import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private const val INTERACTION_DISTANCE = 100.0
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun HomeScreen(
     homeState: HomeState,
     homeActions: HomeActions,
     onAddPin: () -> Unit,
-    onPinInfo: (pinId: Long) -> Unit,
+    onPinInfo: (pinId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -198,6 +201,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun MapOverlay(
@@ -205,7 +209,7 @@ private fun MapOverlay(
     savedCameraPosition: CameraPositionDto,
     saveCameraPosition: (CameraPositionDto) -> Unit,
     onAddPin: () -> Unit,
-    onPinInfo: (pinId: Long) -> Unit,
+    onPinInfo: (pinId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
@@ -277,10 +281,11 @@ private fun MapOverlay(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun Map(
     pins: List<Pin>,
-    onPinInfo: (pinId: Long) -> Unit,
+    onPinInfo: (pinId: Uuid) -> Unit,
     cameraPositionState: CameraPositionState,
     modifier: Modifier = Modifier
 ) {

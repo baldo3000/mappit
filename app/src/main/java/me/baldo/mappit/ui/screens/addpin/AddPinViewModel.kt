@@ -1,5 +1,6 @@
 package me.baldo.mappit.ui.screens.addpin
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -9,7 +10,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.repositories.AuthenticationRepository
-import me.baldo.mappit.data.repositories.PinRepository
+import me.baldo.mappit.data.repositories.PinsRepository
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 interface AddState {
     data object Editing : AddState
@@ -31,12 +34,13 @@ interface AddPinActions {
 }
 
 class AddPinViewModel(
-    private val pinRepository: PinRepository,
+    private val pinsRepository: PinsRepository,
     private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(AddPinState())
     val state = _state.asStateFlow()
 
+    @OptIn(ExperimentalUuidApi::class)
     val actions = object : AddPinActions {
         override fun onUpdateTitle(title: String) {
             _state.update { it.copy(title = title) }
@@ -49,17 +53,18 @@ class AddPinViewModel(
         override fun addPin(position: LatLng) {
             _state.update { it.copy(addState = AddState.Sending) }
             viewModelScope.launch {
-                val userId = authenticationRepository.userId
-                if (userId != null) {
+                val user = authenticationRepository.user
+                if (user != null) {
                     _state.update { it.copy(addState = AddState.Success) }
                     val pin = AutoCompletePin(
                         title = _state.value.title,
                         description = _state.value.description,
                         latitude = position.latitude,
                         longitude = position.longitude,
-                        userId = authenticationRepository.userId!!
+                        userId = Uuid.parse(user.id)
                     )
-                    pinRepository.upsertPin(pin)
+                    Log.i("TAG", "Adding pin: $pin")
+                    pinsRepository.upsertPin(pin)
                 } else {
                     _state.update { it.copy(isError = true, addState = AddState.Editing) }
                 }

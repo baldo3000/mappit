@@ -1,6 +1,5 @@
 package me.baldo.mappit.ui.screens.pininfo
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +42,6 @@ private fun Loading(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxSize()
     ) {
-        Log.i("TAG", "${ButtonDefaults.ContentPadding}")
         LoadingIndicator()
     }
 }
@@ -75,6 +73,15 @@ private fun PinInfo(
             )
             Text(
                 text = "${stringResource(R.string.pin_info_location)}: ${pin.latitude}, ${pin.longitude}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = "${stringResource(R.string.pin_info_author)}: ${
+                    state.username ?: stringResource(
+                        R.string.pin_info_author_anon
+                    )
+                }",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

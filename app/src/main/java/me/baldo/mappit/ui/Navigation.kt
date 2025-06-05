@@ -37,6 +37,8 @@ import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private const val TAG = "NavGraph"
 
@@ -66,9 +68,10 @@ sealed interface MappItRoute {
     data object Discovery : MappItRoute
 
     @Serializable
-    data class PinInfo(val pinId: Long) : MappItRoute
+    data class PinInfo(val pinId: String) : MappItRoute
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun MappItNavGraph(navController: NavHostController) {
     val auth = koinInject<Auth>()
@@ -126,7 +129,7 @@ fun MappItNavGraph(navController: NavHostController) {
                     homeState,
                     homeVM.actions,
                     onAddPin = { navController.navigate(MappItRoute.AddPin) },
-                    onPinInfo = { navController.navigate(MappItRoute.PinInfo(it)) },
+                    onPinInfo = { navController.navigate(MappItRoute.PinInfo(it.toString())) },
                     Modifier.padding(innerPadding)
                 )
             }
@@ -189,7 +192,7 @@ fun MappItNavGraph(navController: NavHostController) {
         }
 
         composable<MappItRoute.PinInfo> { backStackEntry ->
-            val pinId = backStackEntry.toRoute<MappItRoute.PinInfo>().pinId
+            val pinId = Uuid.parse(backStackEntry.toRoute<MappItRoute.PinInfo>().pinId)
             val pinInfoVM = koinViewModel<PinInfoViewModel>(parameters = { parametersOf(pinId) })
             val pinInfoState by pinInfoVM.state.collectAsStateWithLifecycle()
 

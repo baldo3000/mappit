@@ -14,10 +14,10 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
-import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.CameraRepository
-import me.baldo.mappit.data.repositories.PinRepository
+import me.baldo.mappit.data.repositories.PinsRepository
+import me.baldo.mappit.data.repositories.UsersRepository
 import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
@@ -25,9 +25,12 @@ import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private val Context.dataStore by preferencesDataStore("map")
 
+@OptIn(ExperimentalUuidApi::class)
 val appModule = module {
     single { get<Context>().dataStore }
     single {
@@ -51,13 +54,14 @@ val appModule = module {
     single { get<SupabaseClient>().composeAuth }
     single { get<SupabaseClient>().storage }
 
-    single { PinRepository(get()) }
+    single { PinsRepository(get()) }
     single { AuthenticationRepository(get()) }
     single { CameraRepository(get()) }
+    single { UsersRepository(get()) }
 
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { HomeViewModel(get(), get()) }
     viewModel { AddPinViewModel(get(), get()) }
-    viewModel { (pinId: Long) -> PinInfoViewModel(pinId, get()) }
+    viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get()) }
 }
