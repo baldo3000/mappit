@@ -30,6 +30,9 @@ import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
+import me.baldo.mappit.ui.screens.settings.SettingsActions
+import me.baldo.mappit.ui.screens.settings.SettingsScreen
+import me.baldo.mappit.ui.screens.settings.SettingsState
 import me.baldo.mappit.ui.screens.signin.SignInScreen
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
@@ -71,7 +74,11 @@ sealed interface MappItRoute {
 }
 
 @Composable
-fun MappItNavGraph(navController: NavHostController) {
+fun MappItNavGraph(
+    navController: NavHostController,
+    settingsState: SettingsState,
+    settingsActions: SettingsActions
+) {
     val auth = koinInject<Auth>()
 
     LaunchedEffect(Unit) {
@@ -128,6 +135,7 @@ fun MappItNavGraph(navController: NavHostController) {
                     homeVM.actions,
                     onAddPin = { navController.navigate(MappItRoute.AddPin) },
                     onPinInfo = { navController.navigate(MappItRoute.PinInfo(it.toString())) },
+                    theme = settingsState.theme,
                     Modifier.padding(innerPadding)
                 )
             }
@@ -170,8 +178,13 @@ fun MappItNavGraph(navController: NavHostController) {
         }
 
         composable<MappItRoute.Settings> {
-            MenuOverlay(stringResource(R.string.screen_settings), navController) {
 
+            MenuOverlay(stringResource(R.string.screen_settings), navController) {
+                SettingsScreen(
+                    settingsState = settingsState,
+                    settingsActions = settingsActions,
+                    modifier = Modifier.padding(it)
+                )
             }
         }
 

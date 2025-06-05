@@ -83,6 +83,7 @@ import kotlinx.coroutines.launch
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
+import me.baldo.mappit.ui.screens.settings.Theme
 import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
 import me.baldo.mappit.utils.calculateDistance
@@ -101,6 +102,7 @@ fun HomeScreen(
     homeActions: HomeActions,
     onAddPin: () -> Unit,
     onPinInfo: (pinId: Uuid) -> Unit,
+    theme: Theme,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -193,6 +195,7 @@ fun HomeScreen(
                 saveCameraPosition = homeActions::saveCameraPosition,
                 onAddPin = onAddPin,
                 onPinInfo = onPinInfo,
+                theme = theme,
                 modifier = modifier
             )
     }
@@ -206,6 +209,7 @@ private fun MapOverlay(
     saveCameraPosition: (CameraPositionDto) -> Unit,
     onAddPin: () -> Unit,
     onPinInfo: (pinId: Uuid) -> Unit,
+    theme: Theme,
     modifier: Modifier = Modifier
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
@@ -273,7 +277,7 @@ private fun MapOverlay(
             }
         },
     ) {
-        Map(pins, onPinInfo, cameraPositionState)
+        Map(pins, onPinInfo, cameraPositionState, theme)
     }
 }
 
@@ -282,6 +286,7 @@ private fun Map(
     pins: List<Pin>,
     onPinInfo: (pinId: Uuid) -> Unit,
     cameraPositionState: CameraPositionState,
+    theme: Theme,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -402,7 +407,11 @@ private fun Map(
             mapToolbarEnabled = false,
             zoomControlsEnabled = true
         ),
-        mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
+        mapColorScheme = when (theme) {
+            Theme.LIGHT -> ComposeMapColorScheme.LIGHT
+            Theme.DARK -> ComposeMapColorScheme.DARK
+            Theme.SYSTEM -> ComposeMapColorScheme.FOLLOW_SYSTEM
+        }
     ) {
         for (pin in pins) {
             MarkerInfoWindowComposable(
