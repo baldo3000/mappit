@@ -17,7 +17,6 @@
     <string name="auth_password">Password</string>
     <string name="auth_sign_in">Sign In</string>
     <string name="auth_sign_up">Sign Up</string>
-    <string name="auth_sign_out">Sign Out</string>
     <string name="auth_sign_up_go">New user? Sign Up</string>
     <string name="auth_sign_in_go">Already have an account? Sign In</string>
 
@@ -74,8 +73,15 @@
     <string name="profile_username">Username</string>
     <string name="profile_edit">Edit profile</string>
     <string name="profile_save">Save profile</string>
+    <string name="profile_sign_out">Sign Out</string>
     <string name="profile_followers">Followers</string>
     <string name="profile_pins">Pins</string>
     <string name="profile_likes">Likes</string>
+
+    <!-- Profile Setup -->
+    <string name="profile_setup_title">Set up your profile</string>
+    <string name="profile_setup_avatar">Avatar</string>
+    <string name="profile_setup_username">Username</string>
+    <string name="profile_setup_save">Save profile</string>
 
 </resources>

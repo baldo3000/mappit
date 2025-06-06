@@ -24,6 +24,7 @@ data class ProfileState(
 interface ProfileActions {
     fun onEditProfile()
     fun onSaveProfile()
+    fun onLogout()
     fun onUsernameChanged(username: String)
     fun onAvatarChanged(image: Uri)
 }
@@ -54,6 +55,12 @@ class ProfileViewModel(
             }
         }
 
+        override fun onLogout() {
+            viewModelScope.launch {
+                authenticationRepository.signOut()
+            }
+        }
+
         override fun onUsernameChanged(username: String) {
             _state.update { it.copy(editUsername = username) }
         }
@@ -78,7 +85,7 @@ class ProfileViewModel(
                         )
                     ) else it
                 }
-                Log.i("TAG", "Fetched profile: $profile")
+                // Log.i("TAG", "Fetched profile: $profile")
                 _state.update {
                     it.copy(
                         profile = profile,

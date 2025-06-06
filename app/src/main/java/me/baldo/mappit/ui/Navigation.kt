@@ -32,6 +32,8 @@ import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
 import me.baldo.mappit.ui.screens.profile.ProfileScreen
 import me.baldo.mappit.ui.screens.profile.ProfileViewModel
+import me.baldo.mappit.ui.screens.profileSetup.ProfileSetupScreen
+import me.baldo.mappit.ui.screens.profileSetup.ProfileSetupViewModel
 import me.baldo.mappit.ui.screens.settings.SettingsActions
 import me.baldo.mappit.ui.screens.settings.SettingsScreen
 import me.baldo.mappit.ui.screens.settings.SettingsState
@@ -72,6 +74,9 @@ sealed interface MappItRoute {
     data object Discovery : MappItRoute
 
     @Serializable
+    data class ProfileSetup(val userId: String) : MappItRoute
+
+    @Serializable
     data class PinInfo(val pinId: String) : MappItRoute
 }
 
@@ -88,7 +93,14 @@ fun MappItNavGraph(
             when (it) {
                 is SessionStatus.Authenticated -> {
                     Log.i(TAG, "User has authenticated: ${it.session.user?.email}")
-                    navController.navigate(MappItRoute.Home) { popUpTo(0) }
+                    if (it.source !is SessionSource.SignUp) {
+                        navController.navigate(MappItRoute.Home) { popUpTo(0) }
+                    } else {
+                        // For SignUp, navigate to ProfileSetup
+                        val userId = it.session.user?.id?.toString()
+                            ?: error("User registered but profile missing")
+                        navController.navigate(MappItRoute.ProfileSetup(userId)) { popUpTo(0) }
+                    }
                     when (it.source) {
                         SessionSource.External -> {}
                         is SessionSource.SignIn -> {}
@@ -213,6 +225,17 @@ fun MappItNavGraph(
 
             HomeOverlay(BottomBarTab.Profile, navController) {
                 ProfileScreen(profileState, profileVm.actions, Modifier.padding(it))
+            }
+        }
+
+        composable<MappItRoute.ProfileSetup> { backStackEntry ->
+            val userId = Uuid.parse(backStackEntry.toRoute<MappItRoute.ProfileSetup>().userId)
+            val profileSetupVM =
+                koinViewModel<ProfileSetupViewModel>(parameters = { parametersOf(userId) })
+            val profileSetupState by profileSetupVM.state.collectAsStateWithLifecycle()
+
+            ProfileSetupScreen(profileSetupState, profileSetupVM.actions) {
+                navController.navigate(MappItRoute.Home) { popUpTo(0) }
             }
         }
     }

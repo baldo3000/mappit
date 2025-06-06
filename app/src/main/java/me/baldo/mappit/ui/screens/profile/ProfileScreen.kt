@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Save
@@ -57,7 +58,6 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
 import java.io.ByteArrayOutputStream
-
 
 @Composable
 fun ProfileScreen(
@@ -138,6 +138,25 @@ private fun Profile(
                 )
             ) {
                 Box {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        IconButton(
+                            onClick = actions::onLogout,
+                            shapes = IconButtonDefaults.shapes(),
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.Logout,
+                                stringResource(R.string.profile_sign_out)
+                            )
+                        }
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
