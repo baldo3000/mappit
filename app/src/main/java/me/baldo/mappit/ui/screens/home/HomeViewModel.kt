@@ -1,5 +1,6 @@
 package me.baldo.mappit.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
 import me.baldo.mappit.data.repositories.CameraRepository
@@ -46,7 +48,10 @@ class HomeViewModel(
         }
 
         override fun saveCameraPosition(cameraPosition: CameraPositionDto) {
-            viewModelScope.launch {
+            // It is necessary to block the main thread otherwise the application
+            // termination would not allow the coroutine to complete, thus not saving camera state.
+            // Alternatively, you could save camera position at every update but writing to disk frequently is not recommended.
+            runBlocking {
                 cameraRepository.setCameraPosition(cameraPosition)
             }
         }
@@ -81,7 +86,9 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            _state.update { it.copy(savedCameraPosition = cameraRepository.cameraPosition.first()) }
+            val camera = cameraRepository.cameraPosition.first()
+            Log.i("TAG", camera.toString())
+            _state.update { it.copy(savedCameraPosition = camera) }
         }
         actions.updatePins()
     }
