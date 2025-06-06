@@ -12,6 +12,19 @@ class AuthenticationRepository(
     val user: UserInfo?
         get() = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user
 
+    suspend fun getUser(): UserInfo {
+        return auth.retrieveUserForCurrentSession(true)
+    }
+
+    suspend fun signOut(): Boolean {
+        return try {
+            auth.signOut()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun signIn(email: String, password: String): Boolean {
         return try {
             auth.signInWith(Email) {

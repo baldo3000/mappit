@@ -30,6 +30,8 @@ import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
+import me.baldo.mappit.ui.screens.profile.ProfileScreen
+import me.baldo.mappit.ui.screens.profile.ProfileViewModel
 import me.baldo.mappit.ui.screens.settings.SettingsActions
 import me.baldo.mappit.ui.screens.settings.SettingsScreen
 import me.baldo.mappit.ui.screens.settings.SettingsState
@@ -147,12 +149,6 @@ fun MappItNavGraph(
             }
         }
 
-        composable<MappItRoute.Profile> {
-            HomeOverlay(BottomBarTab.Profile, navController) {
-
-            }
-        }
-
         composable<MappItRoute.Dummy> {
             Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainer))
         }
@@ -178,7 +174,6 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.Settings> {
-
             MenuOverlay(stringResource(R.string.screen_settings), navController) {
                 SettingsScreen(
                     settingsState = settingsState,
@@ -209,6 +204,15 @@ fun MappItNavGraph(
 
             MenuOverlay(stringResource(R.string.screen_pin_info), navController) {
                 PinInfoScreen(pinInfoState, pinInfoVM.actions, Modifier.padding(it))
+            }
+        }
+
+        composable<MappItRoute.Profile> {
+            val profileVm = koinViewModel<ProfileViewModel>()
+            val profileState by profileVm.state.collectAsStateWithLifecycle()
+
+            HomeOverlay(BottomBarTab.Profile, navController) {
+                ProfileScreen(profileState, profileVm.actions, Modifier.padding(it))
             }
         }
     }
