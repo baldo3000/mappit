@@ -34,6 +34,20 @@ class PinsRepository(
         }
     }
 
+    suspend fun getPinsOfUser(userId: Uuid): List<Pin> {
+        return withContext(Dispatchers.IO) {
+            try {
+                postgrest.from("pins").select() {
+                    filter {
+                        Pin::userId eq userId
+                    }
+                }.decodeList<Pin>()
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+    }
+
     suspend fun upsertPin(pin: AutoCompletePin) {
         return withContext(Dispatchers.IO) {
             try {

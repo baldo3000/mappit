@@ -237,17 +237,17 @@ private fun Profile(
                         ) {
                             ProfileStatCard(
                                 stringResource(R.string.profile_followers),
-                                "23",
+                                "-",
                                 Modifier.weight(1f)
                             )
                             ProfileStatCard(
                                 stringResource(R.string.profile_pins),
-                                "4",
+                                state.pins,
                                 Modifier.weight(1f)
                             )
                             ProfileStatCard(
                                 stringResource(R.string.profile_likes),
-                                "122",
+                                "-",
                                 Modifier.weight(1f)
                             )
                         }

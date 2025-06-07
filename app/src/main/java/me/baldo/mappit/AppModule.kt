@@ -67,7 +67,7 @@ val appModule = module {
     viewModel { HomeViewModel(get(), get()) }
     viewModel { AddPinViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get()) }
     viewModel { (userId: Uuid) -> ProfileSetupViewModel(userId, get()) }
 }
