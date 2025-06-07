@@ -39,7 +39,7 @@ class ProfileSetupViewModel(
                     usersRepository.updateUser(it.copy(username = _state.value.username))
                     usersRepository.updateUserAvatar(it.id, _state.value.avatar)
                 }
-                _state.update { it.copy(isSaving = false, done = true) }
+                _state.update { it.copy(done = true) }
             }
         }
 

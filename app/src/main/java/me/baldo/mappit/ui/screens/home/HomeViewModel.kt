@@ -1,6 +1,5 @@
 package me.baldo.mappit.ui.screens.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +86,6 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             val camera = cameraRepository.cameraPosition.first()
-            Log.i("TAG", camera.toString())
             _state.update { it.copy(savedCameraPosition = camera) }
         }
         actions.updatePins()

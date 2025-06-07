@@ -7,10 +7,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.repositories.AuthenticationRepository
+import me.baldo.mappit.data.repositories.SignUpResult
 
 data class SignUpState(
     val email: String,
     val password: String,
+    val signUpResult: SignUpResult = SignUpResult.Success,
+    val isSigningUp: Boolean = false
 )
 
 interface SignUpActions {
@@ -37,9 +40,11 @@ class SignUpViewModel(
 
         override fun signUp() {
             viewModelScope.launch {
+                _state.update { it.copy(isSigningUp = true) }
                 val email = _state.value.email
                 val password = _state.value.password
-                authenticationRepository.signUp(email, password)
+                val result = authenticationRepository.signUp(email, password)
+                _state.update { it.copy(signUpResult = result, isSigningUp = false) }
             }
         }
     }

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -30,8 +32,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
@@ -44,6 +48,8 @@ fun ProfileSetupScreen(
     actions: ProfileSetupActions,
     onContinue: () -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val pickAvatar = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             actions.onAvatarChanged(uri)
@@ -105,7 +111,17 @@ fun ProfileSetupScreen(
         OutlinedTextField(
             value = state.username,
             onValueChange = actions::onUsernameChanged,
-            label = { Text(stringResource(R.string.profile_setup_username)) }
+            label = { Text(stringResource(R.string.profile_setup_username)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = KeyboardActions(
+                onGo = {
+                    keyboardController?.hide()
+                    actions.onSaveProfile()
+                }
+            ),
         )
         Spacer(Modifier.height(8.dp))
         Button(
@@ -114,6 +130,6 @@ fun ProfileSetupScreen(
                 actions.onSaveProfile()
             },
             shapes = ButtonDefaults.shapes()
-        ) { Text(stringResource(R.string.profile_setup_save)) }
+        ) { Text(stringResource(if (state.isSaving) R.string.profile_setup_saving else R.string.profile_setup_save)) }
     }
 }

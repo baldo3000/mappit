@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -14,8 +16,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.jan.supabase.compose.auth.ui.AuthForm
 import io.github.jan.supabase.compose.auth.ui.LocalAuthState
@@ -25,6 +30,7 @@ import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
 import me.baldo.mappit.R
+import me.baldo.mappit.data.repositories.SignInResult
 
 @OptIn(AuthUiExperimental::class)
 @Composable
@@ -33,6 +39,8 @@ fun SignInScreen(
     signInActions: SignInActions,
     goToSignUp: () -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     AuthForm() {
         val authState = LocalAuthState.current
 
@@ -53,20 +61,49 @@ fun SignInScreen(
             OutlinedEmailField(
                 value = signInState.email,
                 onValueChange = signInActions::onUpdateEmail,
-                label = { Text(stringResource(R.string.auth_email)) }
+                label = { Text(stringResource(R.string.auth_email)) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                )
             )
             OutlinedPasswordField(
                 value = signInState.password,
                 onValueChange = signInActions::onUpdatePassword,
                 label = { Text(stringResource(R.string.auth_password)) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Go
+                ),
+                keyboardActions = KeyboardActions(
+                    onGo = {
+                        keyboardController?.hide()
+                        signInActions.signIn()
+                    }
+                ),
                 rules = rememberPasswordRuleList(
-                    PasswordRule.minLength(6),
-                    PasswordRule.containsSpecialCharacter(),
-                    PasswordRule.containsDigit(),
-                    PasswordRule.containsLowercase(),
-                    PasswordRule.containsUppercase()
+                    PasswordRule.minLength(1)
                 )
             )
+            when (signInState.signInResult) {
+                SignInResult.Error -> {
+                    Text(
+                        text = stringResource(R.string.auth_sign_in_error),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                SignInResult.InvalidCredentials -> {
+                    Text(
+                        text = stringResource(R.string.auth_sign_in_invalid_credentials),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                SignInResult.Success -> {}
+            }
             Spacer(Modifier.height(4.dp))
             TextButton(goToSignUp) {
                 Text(
@@ -78,9 +115,9 @@ fun SignInScreen(
             Spacer(Modifier.height(4.dp))
             Button(
                 onClick = signInActions::signIn,
-                enabled = authState.validForm,
+                enabled = authState.validForm && !signInState.isSigningIn,
                 shapes = ButtonDefaults.shapes()
-            ) { Text(stringResource(R.string.auth_sign_in)) }
+            ) { Text(stringResource(if (signInState.isSigningIn) R.string.auth_signing_in else R.string.auth_sign_in)) }
         }
     }
 }

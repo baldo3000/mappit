@@ -222,7 +222,8 @@ private fun Profile(
                             OutlinedTextField(
                                 value = state.editUsername,
                                 onValueChange = actions::onUsernameChanged,
-                                label = { Text(stringResource(R.string.profile_username)) }
+                                label = { Text(stringResource(R.string.profile_username)) },
+                                singleLine = true
                             )
                         } else {
                             Text(
