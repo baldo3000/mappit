@@ -12,6 +12,7 @@
     <string name="screen_discovery">Discovery</string>
     <string name="screen_add_pin">Add Pin</string>
     <string name="screen_pin_info">Pin Info</string>
+
     <!-- Auth -->
     <string name="auth_email">Email</string>
     <string name="auth_password">Password</string>
@@ -48,7 +49,8 @@
     <string name="home_add_pin">Add pin</string>
     <string name="home_pin_info">Pin info</string>
     <string name="home_pin_close">Close</string>
-    <string name="home_pin_get_closer">Get closer to interact with Pin</string>
+    <string name="home_pin_get_closer">Get closer to interact with this Pin</string>
+    <string name="home_pin_id">Pin with id</string>
 
     <!-- Add Pin -->
     <string name="add_pin_header">What\'s on your mind?</string>

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
@@ -92,6 +94,10 @@ import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Date
+import java.util.Locale
 import kotlin.uuid.Uuid
 
 private const val INTERACTION_DISTANCE = 100.0
@@ -429,12 +435,17 @@ private fun Map(
                     true
                 }
             ) {
-                // Icon(
-                //     painter = painterResource(R.drawable.ic_launcher_foreground),
-                //     contentDescription = "ciao",
-                //     tint = Color.Unspecified
-                // )
-                Icon(Icons.Outlined.PinDrop, null)
+                Icon(
+                    imageVector = Icons.Outlined.PinDrop,
+                    contentDescription = "${stringResource(R.string.home_pin_id)} ${pin.id}",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            CircleShape
+                        )
+                        .padding(4.dp)
+                )
             }
         }
 
@@ -482,9 +493,30 @@ private fun PinInfoDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = pin.title)
+                IconButton(
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    ),
+                    onClick = onDismiss,
+                    shapes = IconButtonDefaults.shapes()
+                ) {
+                    Icon(
+                        Icons.Outlined.Close,
+                        stringResource(R.string.home_pin_close)
+                    )
+                }
             }
         },
-        dismissButton = {
+        text = {
+            Text(
+                text = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                    .format(Date.from(Instant.parse(pin.createdAt.toString()))),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        },
+        confirmButton = {
             val text = stringResource(R.string.home_pin_info)
             Button(
                 onClick = onPinInfo,
@@ -496,21 +528,6 @@ private fun PinInfoDialog(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(text)
-            }
-        },
-        confirmButton = {
-            IconButton(
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ),
-                onClick = onDismiss,
-                shapes = IconButtonDefaults.shapes()
-            ) {
-                Icon(
-                    Icons.Outlined.Close,
-                    stringResource(R.string.home_pin_close)
-                )
             }
         }
     )
