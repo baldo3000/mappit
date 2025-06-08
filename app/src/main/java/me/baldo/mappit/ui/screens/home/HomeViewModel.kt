@@ -19,7 +19,8 @@ data class HomeState(
     val showLocationDisabledWarning: Boolean = false,
     val showLocationPermissionDeniedWarning: Boolean = false,
     val showLocationPermissionPermanentlyDeniedWarning: Boolean = false,
-    val showNoInternetConnectivityWarning: Boolean = false
+    val showNoInternetConnectivityWarning: Boolean = false,
+    val showLoading: Boolean = true
 )
 
 interface HomeActions {
@@ -29,6 +30,7 @@ interface HomeActions {
     fun setShowLocationPermissionDeniedWarning(show: Boolean)
     fun setShowLocationPermissionPermanentlyDeniedWarning(show: Boolean)
     fun setShowNoInternetConnectivityWarning(show: Boolean)
+    fun setLoading(show: Boolean)
     fun disableAllWarnings()
 }
 
@@ -69,6 +71,10 @@ class HomeViewModel(
 
         override fun setShowNoInternetConnectivityWarning(show: Boolean) {
             _state.update { it.copy(showNoInternetConnectivityWarning = show) }
+        }
+
+        override fun setLoading(show: Boolean) {
+            _state.update { it.copy(showLoading = show) }
         }
 
         override fun disableAllWarnings() {

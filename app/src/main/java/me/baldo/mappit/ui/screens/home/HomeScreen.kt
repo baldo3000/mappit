@@ -148,9 +148,12 @@ fun HomeScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_START) {
         locationPermissions.launchPermissionRequest()
         update()
+        homeActions.setLoading(false)
     }
 
     when {
+        homeState.showLoading -> {}
+
         homeState.showLocationPermissionDeniedWarning ->
             Warning(
                 icon = Icons.Outlined.GpsOff,
