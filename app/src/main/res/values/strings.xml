@@ -85,6 +85,7 @@
     <string name="profile_followers">Followers</string>
     <string name="profile_pins">Pins</string>
     <string name="profile_likes">Likes</string>
+    <string name="profile_chooser">Select an image</string>
 
     <!-- Profile Setup -->
     <string name="profile_setup_title">Set up your profile</string>

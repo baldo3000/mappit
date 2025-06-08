@@ -1,9 +1,5 @@
 package me.baldo.mappit.ui.screens.profileSetup
 
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +37,7 @@ import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
+import me.baldo.mappit.utils.rememberImageLauncher
 
 @Composable
 fun ProfileSetupScreen(
@@ -50,12 +47,8 @@ fun ProfileSetupScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val pickAvatar = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        if (uri != null) {
-            actions.onAvatarChanged(uri)
-        } else {
-            Log.d("TAG", "No media selected")
-        }
+    val imageLauncher = rememberImageLauncher { uri ->
+        actions.onAvatarChanged(uri)
     }
 
     val placeholder: Painter = rememberVectorPainter(
@@ -83,7 +76,7 @@ fun ProfileSetupScreen(
         Box(
             modifier = Modifier
                 .clickable {
-                    pickAvatar.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                    imageLauncher.selectImage()
                 }
                 .border(
                     width = 4.dp,

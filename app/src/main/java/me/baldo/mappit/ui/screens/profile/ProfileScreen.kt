@@ -1,14 +1,6 @@
 package me.baldo.mappit.ui.screens.profile
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,12 +44,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
-import java.io.ByteArrayOutputStream
+import me.baldo.mappit.utils.rememberImageLauncher
 
 @Composable
 fun ProfileScreen(
@@ -72,34 +63,6 @@ fun ProfileScreen(
     }
 }
 
-fun Uri.toBitmap(context: Context): Bitmap? {
-    val contentResolver = context.contentResolver
-    val inputStream = contentResolver.openInputStream(this)
-    return BitmapFactory.decodeStream(inputStream)
-}
-
-fun Uri.toDrawable(context: Context): Drawable? {
-    val contentResolver = context.contentResolver
-    val inputStream = contentResolver.openInputStream(this)
-    return Drawable.createFromStream(inputStream, this.toString())
-}
-
-fun Context.reduceImageSize(drawable: Drawable?): Bitmap? {
-    if (drawable == null) {
-        return null
-    }
-
-    // Creating the Byte Array
-    val baos = ByteArrayOutputStream()
-    // You can change the size based on your needs
-    val bitmap = drawable.toBitmap(100, 100, Bitmap.Config.ARGB_8888)
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-    val imageBytes: ByteArray = baos.toByteArray()
-
-    // Returning Bitmap
-    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-}
-
 @Composable
 private fun Profile(
     state: ProfileState,
@@ -110,12 +73,8 @@ private fun Profile(
 
     var newProfileImage by remember { mutableStateOf<Uri?>(null) }
 
-    val pickAvatar = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        if (uri != null) {
-            newProfileImage = uri
-        } else {
-            Log.d("TAG", "No media selected")
-        }
+    val imageLauncher = rememberImageLauncher { uri ->
+        newProfileImage = uri
     }
 
     val placeholder: Painter = rememberVectorPainter(
@@ -192,7 +151,7 @@ private fun Profile(
                         Box(
                             modifier = Modifier
                                 .clickable(enabled = state.isEditing) {
-                                    pickAvatar.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                                    imageLauncher.selectImage()
                                 }
                                 .then(
                                     if (state.isEditing) Modifier.border(
