@@ -92,20 +92,24 @@ fun MappItNavGraph(
         auth.sessionStatus.collect {
             when (it) {
                 is SessionStatus.Authenticated -> {
-                    Log.i(TAG, "User has authenticated: ${it.session.user?.email}")
-                    if (it.source !is SessionSource.SignUp) {
-                        navController.navigate(MappItRoute.Home) { popUpTo(0) }
-                    } else {
-                        // For SignUp, navigate to ProfileSetup
-                        val userId = it.session.user?.id?.toString()
-                            ?: error("User registered but profile missing")
-                        navController.navigate(MappItRoute.ProfileSetup(userId)) { popUpTo(0) }
-                    }
                     when (it.source) {
                         SessionSource.External -> {}
-                        is SessionSource.SignIn -> {}
-                        is SessionSource.SignUp -> {}
-                        SessionSource.Storage -> {}
+                        is SessionSource.SignIn -> {
+                            navController.navigate(MappItRoute.Home) { popUpTo(0) }
+                        }
+
+                        is SessionSource.SignUp -> {
+                            val userId = it.session.user?.id?.toString()
+                                ?: error("User registered but profile missing")
+                            navController.navigate(MappItRoute.ProfileSetup(userId)) { popUpTo(0) }
+                        }
+
+                        SessionSource.Storage -> {
+                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.Dummy::class.qualifiedName) {
+                                navController.navigate(MappItRoute.Home) { popUpTo(0) }
+                            }
+                        }
+
                         SessionSource.Unknown -> {}
                         is SessionSource.UserChanged -> {}
                         is SessionSource.UserIdentitiesChanged -> {}
