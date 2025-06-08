@@ -7,13 +7,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.Pin
+import me.baldo.mappit.data.model.Profile
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
 import kotlin.uuid.Uuid
 
 data class PinInfoState(
     val pin: Pin? = null,
-    val username: String? = null,
+    val profile: Profile? = null,
     val isLoading: Boolean = true
 )
 
@@ -36,10 +37,21 @@ class PinInfoViewModel(
     init {
         viewModelScope.launch {
             val pin = pinsRepository.getPin(pinId)
+            val profile = pin?.userId?.let { userId ->
+                usersRepository.getUser(userId)?.let {
+                    if (it.avatarUrl.isNullOrEmpty()) it.copy(
+                        avatarUrl = usersRepository.getUserAvatarUrl(
+                            it.id,
+                            it.username ?: it.email
+                        )
+                    ) else it
+                }
+            }
+
             _state.update {
                 it.copy(
                     pin = pin,
-                    username = pin?.userId?.let { usersRepository.getUser(it)?.username },
+                    profile = profile,
                     isLoading = false
                 )
             }
