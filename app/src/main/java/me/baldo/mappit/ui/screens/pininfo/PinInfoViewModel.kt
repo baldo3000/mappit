@@ -15,6 +15,7 @@ import kotlin.uuid.Uuid
 data class PinInfoState(
     val pin: Pin? = null,
     val profile: Profile? = null,
+    val imageUrl: String = "",
     val isLoading: Boolean = true
 )
 
@@ -40,11 +41,15 @@ class PinInfoViewModel(
             val profile = pin?.userId?.let { userId ->
                 usersRepository.getUser(userId)
             }
+            val image = pin?.let { pin ->
+                pinsRepository.getPinImageUrl(pin.id)
+            } ?: ""
 
             _state.update {
                 it.copy(
                     pin = pin,
                     profile = profile,
+                    imageUrl = image,
                     isLoading = false
                 )
             }

@@ -56,7 +56,7 @@ val appModule = module {
     single { get<SupabaseClient>().composeAuth }
     single { get<SupabaseClient>().storage }
 
-    single { PinsRepository(get()) }
+    single { PinsRepository(get(), get()) }
     single { AuthenticationRepository(get()) }
     single { CameraRepository(get()) }
     single { UsersRepository(get(), get()) }

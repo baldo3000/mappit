@@ -1,5 +1,6 @@
 package me.baldo.mappit.ui.screens.addpin
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,21 +16,23 @@ import kotlin.uuid.Uuid
 
 interface AddState {
     data object Editing : AddState
-    data object Sending : AddState
+    data object Error : AddState
     data object Success : AddState
 }
 
 data class AddPinState(
     val title: String = "",
     val description: String = "",
-    val isError: Boolean = false,
-    val addState: AddState = AddState.Editing
+    val addState: AddState = AddState.Editing,
+    val isSaving: Boolean = false,
+    val image: Uri = Uri.EMPTY
 )
 
 interface AddPinActions {
     fun onUpdateTitle(title: String)
     fun onUpdateDescription(description: String)
     fun addPin(position: LatLng)
+    fun onImageChanged(image: Uri)
 }
 
 class AddPinViewModel(
@@ -49,24 +52,41 @@ class AddPinViewModel(
         }
 
         override fun addPin(position: LatLng) {
-            _state.update { it.copy(addState = AddState.Sending) }
+            _state.update { it.copy(isSaving = true) }
             viewModelScope.launch {
-                val user = authenticationRepository.user
-                if (user != null) {
-                    _state.update { it.copy(addState = AddState.Success) }
-                    val pin = AutoCompletePin(
-                        title = _state.value.title,
-                        description = _state.value.description,
-                        latitude = position.latitude,
-                        longitude = position.longitude,
-                        userId = Uuid.parse(user.id)
-                    )
-                    Log.i("TAG", "Adding pin: $pin")
-                    pinsRepository.upsertPin(pin)
-                } else {
-                    _state.update { it.copy(isError = true, addState = AddState.Editing) }
+                _state.update { state ->
+                    authenticationRepository.user?.let { user ->
+                        val pin = AutoCompletePin(
+                            title = state.title,
+                            description = state.description,
+                            latitude = position.latitude,
+                            longitude = position.longitude,
+                            userId = Uuid.parse(user.id)
+                        )
+                        Log.i("TAG", "Adding pin: $pin")
+                        pinsRepository.upsertPin(pin)?.let { addedPin ->
+                            if (state.image == Uri.EMPTY || pinsRepository.updatePinImage(
+                                    addedPin.id,
+                                    state.image
+                                )
+                            ) {
+                                state.copy(addState = AddState.Success)
+                            } else {
+                                pinsRepository.deletePin(addedPin)
+                                state.copy(addState = AddState.Error, isSaving = false)
+                            }
+                        } ?: run {
+                            state.copy(addState = AddState.Error, isSaving = false)
+                        }
+                    } ?: run {
+                        state.copy(addState = AddState.Error, isSaving = false)
+                    }
                 }
             }
+        }
+
+        override fun onImageChanged(image: Uri) {
+            _state.update { it.copy(image = image) }
         }
     }
 }

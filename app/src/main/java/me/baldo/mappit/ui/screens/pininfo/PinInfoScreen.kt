@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -93,6 +92,7 @@ private fun PinInfo(
                 PinCard(
                     pin = pin,
                     profile = profile,
+                    imageUrl = state.imageUrl,
                     actions = actions
                 )
             }
@@ -126,6 +126,7 @@ private fun PinInfo(
 private fun PinCard(
     pin: Pin,
     profile: Profile,
+    imageUrl: String = "",
     actions: PinInfoActions
 ) {
     Card(
@@ -141,6 +142,7 @@ private fun PinCard(
         ) {
             ProfileSection(profile)
             BodySection(pin.title, pin.description)
+            ImageSection(imageUrl)
             DetailsSection(pin.createdAt, pin.latitude, pin.longitude)
             ActionsSection()
         }
@@ -202,6 +204,21 @@ private fun BodySection(
             style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Composable
+private fun ImageSection(
+    imageUrl: String
+) {
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .build(),
+        contentDescription = stringResource(R.string.pin_info_image),
+        contentScale = ContentScale.Inside,
+        modifier = Modifier
+            .clip(RoundedCornerShape(24.dp))
+    )
 }
 
 @Composable
