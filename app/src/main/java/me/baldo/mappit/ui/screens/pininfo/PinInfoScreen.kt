@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -26,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -93,6 +96,9 @@ private fun PinInfo(
                     pin = pin,
                     profile = profile,
                     imageUrl = state.imageUrl,
+                    likes = state.likes,
+                    isLiked = state.isLiked,
+                    isBookmarked = state.isBookmarked,
                     actions = actions
                 )
             }
@@ -127,6 +133,9 @@ private fun PinCard(
     pin: Pin,
     profile: Profile,
     imageUrl: String = "",
+    likes: Int,
+    isLiked: Boolean,
+    isBookmarked: Boolean,
     actions: PinInfoActions
 ) {
     Card(
@@ -144,7 +153,13 @@ private fun PinCard(
             BodySection(pin.title, pin.description)
             ImageSection(imageUrl)
             DetailsSection(pin.createdAt, pin.latitude, pin.longitude)
-            ActionsSection()
+            ActionsSection(
+                likes = likes,
+                isLiked = isLiked,
+                toggleLike = actions::toggleLike,
+                isBookmarked = isBookmarked,
+                toggleBookmark = actions::toggleBookmark
+            )
         }
     }
 }
@@ -196,7 +211,7 @@ private fun BodySection(
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primaryContainer
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -252,7 +267,13 @@ private fun DetailsSection(
 }
 
 @Composable
-private fun ActionsSection() {
+private fun ActionsSection(
+    likes: Int = 0,
+    isLiked: Boolean = false,
+    toggleLike: (Boolean) -> Unit = {},
+    isBookmarked: Boolean = false,
+    toggleBookmark: (Boolean) -> Unit = {}
+) {
     Column {
         HorizontalDivider(
             color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer).copy(alpha = 0.5f)
@@ -260,33 +281,40 @@ private fun ActionsSection() {
         Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            IconButton(
+                onClick = { toggleLike(!isLiked) },
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = stringResource(R.string.pin_info_like),
+                    tint = if (isLiked) MaterialTheme.colorScheme.error else LocalContentColor.current
+                )
+            }
+            Text(
+                text = likes.toString(),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            IconButton(
+                onClick = { toggleBookmark(!isBookmarked) },
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                    contentDescription = stringResource(R.string.pin_info_bookmark),
+                    tint = if (isBookmarked) MaterialTheme.colorScheme.tertiary else LocalContentColor.current
+                )
+            }
             IconButton(
                 onClick = {},
                 shapes = IconButtonDefaults.shapes()
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ChatBubbleOutline,
-                    contentDescription = null
-                )
-            }
-            IconButton(
-                onClick = {},
-                shapes = IconButtonDefaults.shapes()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = null
-                )
-            }
-            IconButton(
-                onClick = {},
-                shapes = IconButtonDefaults.shapes()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.BookmarkBorder,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.pin_info_chat)
                 )
             }
             Spacer(Modifier.weight(1f))
@@ -296,7 +324,7 @@ private fun ActionsSection() {
             ) {
                 Icon(
                     imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.pin_info_more)
                 )
             }
         }

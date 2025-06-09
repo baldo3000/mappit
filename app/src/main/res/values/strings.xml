@@ -69,6 +69,10 @@
     <string name="pin_info_author">Pin author</string>
     <string name="pin_info_author_anon">Anonymous</string>
     <string name="pin_info_image">Pin image</string>
+    <string name="pin_info_like">Like</string>
+    <string name="pin_info_bookmark">Bookmark</string>
+    <string name="pin_info_chat">Chat</string>
+    <string name="pin_info_more">More</string>
 
     <!-- Settings -->
     <string name="settings_category_UI">UI</string>

@@ -102,14 +102,6 @@ fun AddPinScreen(
             )
         )
         Spacer(Modifier.height(8.dp))
-        if (addPinState.addState is AddState.Error) {
-            Text(
-                text = stringResource(R.string.add_pin_error),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelLarge
-            )
-            Spacer(Modifier.height(8.dp))
-        }
         Box(
             modifier = Modifier.padding(horizontal = 64.dp)
         ) {
@@ -124,6 +116,14 @@ fun AddPinScreen(
             )
         }
         if (addPinState.image != Uri.EMPTY) {
+            Spacer(Modifier.height(8.dp))
+        }
+        if (addPinState.addState is AddState.Error) {
+            Text(
+                text = stringResource(R.string.add_pin_error),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelLarge
+            )
             Spacer(Modifier.height(8.dp))
         }
         Row(

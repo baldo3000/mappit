@@ -15,7 +15,9 @@ import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import me.baldo.mappit.data.repositories.AuthenticationRepository
+import me.baldo.mappit.data.repositories.BookmarksRepository
 import me.baldo.mappit.data.repositories.CameraRepository
+import me.baldo.mappit.data.repositories.LikesRepository
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.SettingsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
@@ -61,6 +63,8 @@ val appModule = module {
     single { CameraRepository(get()) }
     single { UsersRepository(get(), get()) }
     single { SettingsRepository(get()) }
+    single { BookmarksRepository(get()) }
+    single { LikesRepository(get()) }
 
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
@@ -68,6 +72,6 @@ val appModule = module {
     viewModel { AddPinViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
-    viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get()) }
+    viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get(), get(), get(), get()) }
     viewModel { (userId: Uuid) -> ProfileSetupViewModel(userId, get()) }
 }
