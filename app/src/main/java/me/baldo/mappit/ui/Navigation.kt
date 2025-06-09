@@ -105,16 +105,34 @@ fun MappItNavGraph(
                         }
 
                         SessionSource.Storage -> {
+                            Log.i(TAG, "Session restored from storage")
                             if (navController.currentBackStackEntry?.destination?.route == MappItRoute.Dummy::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
 
-                        SessionSource.Unknown -> {}
-                        is SessionSource.UserChanged -> {}
-                        is SessionSource.UserIdentitiesChanged -> {}
-                        SessionSource.AnonymousSignIn -> {}
-                        is SessionSource.Refresh -> {}
+                        SessionSource.Unknown -> {
+                            Log.i(TAG, "Session source is unknown")
+                        }
+
+                        is SessionSource.UserChanged -> {
+                            Log.i(TAG, "User changed")
+                        }
+
+                        is SessionSource.UserIdentitiesChanged -> {
+                            Log.i(TAG, "User identities changed")
+                        }
+
+                        SessionSource.AnonymousSignIn -> {
+                            Log.i(TAG, "Anonymous sign in")
+                        }
+
+                        is SessionSource.Refresh -> {
+                            Log.i(TAG, "Session refreshed")
+                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.Dummy::class.qualifiedName) {
+                                navController.navigate(MappItRoute.Home) { popUpTo(0) }
+                            }
+                        }
                     }
                 }
 
