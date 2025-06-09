@@ -1,7 +1,6 @@
 package me.baldo.mappit.ui.screens.profile
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +71,7 @@ class ProfileViewModel(
         override fun onAvatarChanged(image: Uri) {
             _state.value.profile?.let { profile ->
                 viewModelScope.launch {
-                    usersRepository.updateUserAvatar(profile.id, image)
+                    usersRepository.updateUserAvatar(profile, image)
                 }
             }
         }
@@ -81,14 +80,7 @@ class ProfileViewModel(
     init {
         authenticationRepository.user?.let { user ->
             viewModelScope.launch {
-                val profile = usersRepository.getUser(Uuid.parse(user.id))?.let {
-                    if (it.avatarUrl.isNullOrEmpty()) it.copy(
-                        avatarUrl = usersRepository.getUserAvatarUrl(
-                            it.id,
-                            it.username ?: it.email
-                        )
-                    ) else it
-                }
+                val profile = usersRepository.getUser(Uuid.parse(user.id))
                 // Log.i("TAG", "Fetched profile: $profile")
                 _state.update {
                     it.copy(

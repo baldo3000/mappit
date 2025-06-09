@@ -38,14 +38,7 @@ class PinInfoViewModel(
         viewModelScope.launch {
             val pin = pinsRepository.getPin(pinId)
             val profile = pin?.userId?.let { userId ->
-                usersRepository.getUser(userId)?.let {
-                    if (it.avatarUrl.isNullOrEmpty()) it.copy(
-                        avatarUrl = usersRepository.getUserAvatarUrl(
-                            it.id,
-                            it.username ?: it.email
-                        )
-                    ) else it
-                }
+                usersRepository.getUser(userId)
             }
 
             _state.update {

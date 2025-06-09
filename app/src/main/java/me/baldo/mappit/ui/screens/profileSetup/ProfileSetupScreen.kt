@@ -90,8 +90,6 @@ fun ProfileSetupScreen(
                 error = placeholder,
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(state.avatar)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
                     .build(),
                 contentDescription = stringResource(R.string.profile_setup_avatar),
                 contentScale = ContentScale.Crop,

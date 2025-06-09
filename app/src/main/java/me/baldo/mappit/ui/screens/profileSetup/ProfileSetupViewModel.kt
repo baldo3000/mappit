@@ -37,7 +37,7 @@ class ProfileSetupViewModel(
             viewModelScope.launch {
                 usersRepository.getUser(userId)?.let {
                     usersRepository.updateUser(it.copy(username = _state.value.username))
-                    usersRepository.updateUserAvatar(it.id, _state.value.avatar)
+                    usersRepository.updateUserAvatar(it, _state.value.avatar)
                 }
                 _state.update { it.copy(done = true) }
             }

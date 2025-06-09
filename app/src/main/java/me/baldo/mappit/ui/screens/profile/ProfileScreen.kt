@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.AccountCircle
@@ -27,6 +28,7 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,6 +92,7 @@ private fun Profile(
     ) {
         state.profile?.let { profile ->
             Card(
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -167,8 +170,6 @@ private fun Profile(
                                 error = placeholder,
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(newProfileImage ?: profile.avatarUrl)
-                                    .diskCachePolicy(CachePolicy.DISABLED)
-                                    .memoryCachePolicy(CachePolicy.DISABLED)
                                     .build(),
                                 contentDescription = stringResource(R.string.profile_avatar),
                                 contentScale = ContentScale.Crop,
@@ -192,7 +193,7 @@ private fun Profile(
                             )
                         }
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             ProfileStatCard(
@@ -225,10 +226,10 @@ private fun ProfileStatCard(
     modifier: Modifier = Modifier
 ) {
     Card(
+        shape = RoundedCornerShape(24.dp),
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
         Column(
@@ -244,9 +245,9 @@ private fun ProfileStatCard(
             )
             Text(
                 text = title,
+                color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer).copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center
             )
         }

@@ -8,6 +8,8 @@ import io.github.jan.supabase.storage.upload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Profile
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
 
 class UsersRepository(
@@ -48,9 +50,7 @@ class UsersRepository(
     suspend fun updateUser(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("profiles").update({
-                    Profile::username setTo profile.username
-                }) {
+                postgrest.from("profiles").update(profile) {
                     filter {
                         Profile::id eq profile.id
                     }
@@ -63,11 +63,19 @@ class UsersRepository(
         }
     }
 
-    suspend fun updateUserAvatar(userId: Uuid, image: Uri): Boolean {
+    @OptIn(ExperimentalTime::class)
+    suspend fun updateUserAvatar(profile: Profile, newImage: Uri): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("avatars").upload("$userId.jpg", image) {
+                val newImageName = "${profile.id}-${Clock.System.now()}.jpg"
+                val newUrl = getUserAvatarUrl(newImageName, profile.username ?: profile.email)
+                storage.from("avatars").upload(newImageName, newImage) {
                     upsert = true
+                }
+                updateUser(profile.copy(avatarUrl = newUrl))
+                profile.avatarUrl?.let { oldAvatarUrl ->
+                    val oldImageName = oldAvatarUrl.substringAfterLast('/')
+                    deleteUserAvatar(oldImageName)
                 }
                 true
             } catch (e: Exception) {
@@ -77,13 +85,25 @@ class UsersRepository(
         }
     }
 
-    suspend fun getUserAvatarUrl(userId: Uuid, placeholderName: String): String {
+    suspend fun getUserAvatarUrl(imageName: String, placeholderName: String): String {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("avatars").publicUrl("$userId.jpg")
+                storage.from("avatars").publicUrl(imageName)
             } catch (e: Exception) {
                 Log.i("TAG", "Error fetching user avatar: ${e.message}")
                 "https://ui-avatars.com/api/?name=$placeholderName&background=random&size=512"
+            }
+        }
+    }
+
+    suspend fun deleteUserAvatar(imageName: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                storage.from("avatars").delete(imageName)
+                true
+            } catch (e: Exception) {
+                Log.i("TAG", "Error deleting user avatar: ${e.message}")
+                false
             }
         }
     }

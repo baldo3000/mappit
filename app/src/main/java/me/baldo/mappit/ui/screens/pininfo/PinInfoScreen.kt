@@ -163,8 +163,6 @@ private fun ProfileSection(
             error = placeholder,
             model = ImageRequest.Builder(LocalContext.current)
                 .data(profile.avatarUrl)
-                .diskCachePolicy(CachePolicy.DISABLED)
-                .memoryCachePolicy(CachePolicy.DISABLED)
                 .build(),
             contentDescription = stringResource(R.string.profile_avatar),
             contentScale = ContentScale.Crop,
