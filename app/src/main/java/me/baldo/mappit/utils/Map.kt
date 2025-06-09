@@ -33,10 +33,10 @@ fun calculateDistance(p1: LatLng, p2: LatLng): Double {
 
 @Composable
 fun getDynamicMapStyle(): MapStyleOptions {
-    val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
     val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
     val surfaceColor = MaterialTheme.colorScheme.surfaceContainer.toArgb()
     val elementsColor = MaterialTheme.colorScheme.secondaryContainer.toArgb()
+    val buildingsColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f).toArgb()
     val elementsBorderColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb()
     val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val textColorDim = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f).toArgb()
@@ -145,6 +145,15 @@ fun getDynamicMapStyle(): MapStyleOptions {
             "stylers": [
               {
                 "color": "#${Integer.toHexString(elementsBorderColor)}"
+              }
+            ]
+          },
+          {
+            featureType: "landscape.man_made.building",
+            elementType: "geometry.fill",
+            "stylers": [
+              {
+                "color": "#${Integer.toHexString(buildingsColor)}"
               }
             ]
           },

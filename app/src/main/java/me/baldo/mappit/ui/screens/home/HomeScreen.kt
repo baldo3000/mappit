@@ -465,7 +465,7 @@ private fun Map(
         Circle(
             center = cameraPositionState.position.target,
             radius = INTERACTION_DISTANCE,
-            fillColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+            fillColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.05f),
             strokeColor = MaterialTheme.colorScheme.onSurfaceVariant,
             strokeWidth = 3f
         )
