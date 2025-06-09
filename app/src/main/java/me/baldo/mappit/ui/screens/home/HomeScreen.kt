@@ -71,6 +71,7 @@ import com.google.android.gms.location.LocationServices.getFusedLocationProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.ComposeMapColorScheme
@@ -89,6 +90,7 @@ import me.baldo.mappit.ui.screens.settings.Theme
 import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
 import me.baldo.mappit.utils.calculateDistance
+import me.baldo.mappit.utils.getDynamicMapStyle
 import me.baldo.mappit.utils.isLocationEnabled
 import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
@@ -403,8 +405,8 @@ private fun Map(
             isBuildingEnabled = true,
             isMyLocationEnabled = false,
             mapType = MapType.NORMAL,
-            // mapStyleOptions = MapStyleOptions.loadRawResourceStyle(ctx, R.raw.map_style_map),
-            minZoomPreference = 8f,
+            mapStyleOptions = getDynamicMapStyle(),
+            minZoomPreference = 12f,
             maxZoomPreference = 20f
         ),
         uiSettings = MapUiSettings(
@@ -463,8 +465,8 @@ private fun Map(
         Circle(
             center = cameraPositionState.position.target,
             radius = INTERACTION_DISTANCE,
-            fillColor = Color.Black.copy(alpha = 0.1f),
-            strokeColor = Color.Black,
+            fillColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+            strokeColor = MaterialTheme.colorScheme.onSurfaceVariant,
             strokeWidth = 3f
         )
     }
