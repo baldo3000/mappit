@@ -8,6 +8,8 @@ import io.github.jan.supabase.storage.upload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Profile
+import me.baldo.mappit.data.remote.Buckets
+import me.baldo.mappit.data.remote.Tables
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
@@ -19,7 +21,7 @@ class UsersRepository(
     suspend fun getUser(id: Uuid): Profile? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("profiles").select() {
+                postgrest.from(Tables.PROFILES).select() {
                     filter {
                         Profile::id eq id
                     }
@@ -34,7 +36,7 @@ class UsersRepository(
     suspend fun updateUser(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("profiles").update(profile) {
+                postgrest.from(Tables.PROFILES).update(profile) {
                     filter {
                         Profile::id eq profile.id
                     }
@@ -53,7 +55,7 @@ class UsersRepository(
             try {
                 val newImageName = "${profile.id}-${Clock.System.now()}.jpg"
                 val newUrl = getUserAvatarUrl(newImageName, profile.username ?: profile.email)
-                storage.from("avatars").upload(newImageName, newImage) {
+                storage.from(Buckets.AVATARS).upload(newImageName, newImage) {
                     upsert = true
                 }
                 updateUser(profile.copy(avatarUrl = newUrl))
@@ -72,7 +74,7 @@ class UsersRepository(
     suspend fun getUserAvatarUrl(imageName: String, placeholderName: String): String {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("avatars").publicUrl(imageName)
+                storage.from(Buckets.AVATARS).publicUrl(imageName)
             } catch (e: Exception) {
                 Log.i("TAG", "Error fetching user avatar: ${e.message}")
                 "https://ui-avatars.com/api/?name=$placeholderName&background=random&size=512"
@@ -83,7 +85,7 @@ class UsersRepository(
     suspend fun deleteUserAvatar(imageName: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("avatars").delete(imageName)
+                storage.from(Buckets.AVATARS).delete(imageName)
                 true
             } catch (e: Exception) {
                 Log.i("TAG", "Error deleting user avatar: ${e.message}")

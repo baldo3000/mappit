@@ -26,6 +26,8 @@ import me.baldo.mappit.ui.composables.HomeOverlay
 import me.baldo.mappit.ui.composables.MenuOverlay
 import me.baldo.mappit.ui.screens.addpin.AddPinScreen
 import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
+import me.baldo.mappit.ui.screens.bookmarks.BookmarksScreen
+import me.baldo.mappit.ui.screens.bookmarks.BookmarksViewModel
 import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
@@ -72,6 +74,9 @@ sealed interface MappItRoute {
 
     @Serializable
     data object Discovery : MappItRoute
+
+    @Serializable
+    data object Bookmarks : MappItRoute
 
     @Serializable
     data class ProfileSetup(val userId: String) : MappItRoute
@@ -180,6 +185,29 @@ fun MappItNavGraph(
         composable<MappItRoute.Discovery> {
             HomeOverlay(BottomBarTab.Discovery, navController) {
 
+            }
+        }
+
+        composable<MappItRoute.Bookmarks> {
+            val user = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user
+
+            if (user != null) {
+                HomeOverlay(BottomBarTab.Bookmarks, navController) {
+                    val bookmarksVM = koinViewModel<BookmarksViewModel>(
+                        parameters = { parametersOf(Uuid.parse(user.id)) }
+                    )
+                    val bookmarksState by bookmarksVM.state.collectAsStateWithLifecycle()
+
+                    BookmarksScreen(
+                        state = bookmarksState,
+                        actions = bookmarksVM.actions,
+                        onPinClick = { navController.navigate(MappItRoute.PinInfo(it.id.toString())) },
+                        onProfileClick = {},
+                        modifier = Modifier.padding(it)
+                    )
+                }
+            } else {
+                TODO()
             }
         }
 

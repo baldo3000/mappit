@@ -22,6 +22,7 @@ import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.SettingsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
 import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
+import me.baldo.mappit.ui.screens.bookmarks.BookmarksViewModel
 import me.baldo.mappit.ui.screens.home.HomeViewModel
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
 import me.baldo.mappit.ui.screens.profile.ProfileViewModel
@@ -74,4 +75,5 @@ val appModule = module {
     viewModel { ProfileViewModel(get(), get(), get(), get()) }
     viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get(), get(), get(), get()) }
     viewModel { (userId: Uuid) -> ProfileSetupViewModel(userId, get()) }
+    viewModel { (userId: Uuid) -> BookmarksViewModel(userId, get(), get()) }
 }

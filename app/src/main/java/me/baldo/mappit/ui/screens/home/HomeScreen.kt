@@ -80,8 +80,6 @@ import com.google.maps.android.compose.MarkerInfoWindowComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
@@ -90,13 +88,12 @@ import me.baldo.mappit.utils.LocationService
 import me.baldo.mappit.utils.PermissionStatus
 import me.baldo.mappit.utils.calculateDistance
 import me.baldo.mappit.utils.getDynamicMapStyle
+import me.baldo.mappit.utils.getPrettyFormat
 import me.baldo.mappit.utils.isLocationEnabled
 import me.baldo.mappit.utils.isOnline
 import me.baldo.mappit.utils.openLocationSettings
 import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
-import java.time.format.TextStyle
-import java.util.Locale
 import kotlin.uuid.Uuid
 
 private const val INTERACTION_DISTANCE = 100.0
@@ -512,17 +509,7 @@ private fun PinInfoDialog(
         },
         text = {
             Text(
-                text = pin.createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
-                    .let { dt ->
-                        val time = "%02d:%02d".format(dt.hour, dt.minute)
-                        val day = "%02d".format(dt.dayOfMonth)
-                        val month = dt.month.getDisplayName(
-                            TextStyle.SHORT,
-                            Locale.getDefault()
-                        )
-                        val year = "%02d".format(dt.year % 100)
-                        "$time · $day $month $year"
-                    },
+                text = pin.createdAt.getPrettyFormat(),
                 style = MaterialTheme.typography.bodyMedium
             )
         },

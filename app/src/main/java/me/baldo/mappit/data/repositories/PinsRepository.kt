@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.model.Pin
+import me.baldo.mappit.data.remote.Buckets
+import me.baldo.mappit.data.remote.Tables
 import kotlin.uuid.Uuid
 
 class PinsRepository(
@@ -18,7 +20,7 @@ class PinsRepository(
     suspend fun getPin(pinId: Uuid): Pin? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pins").select() {
+                postgrest.from(Tables.PINS).select() {
                     filter {
                         Pin::id eq pinId
                     }
@@ -32,7 +34,7 @@ class PinsRepository(
     suspend fun getPins(): List<Pin> {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pins").select().decodeList<Pin>()
+                postgrest.from(Tables.PINS).select().decodeList<Pin>()
             } catch (e: Exception) {
                 emptyList()
             }
@@ -42,7 +44,7 @@ class PinsRepository(
     suspend fun getPinsOfUser(userId: Uuid): List<Pin> {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pins").select() {
+                postgrest.from(Tables.PINS).select() {
                     filter {
                         Pin::userId eq userId
                     }
@@ -56,7 +58,7 @@ class PinsRepository(
     suspend fun upsertPin(pin: AutoCompletePin): Pin? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pins").upsert(pin) { select() }.decodeSingleOrNull<Pin>()
+                postgrest.from(Tables.PINS).upsert(pin) { select() }.decodeSingleOrNull<Pin>()
             } catch (e: Exception) {
                 Log.i("TAG", "Error upserting pin: $e")
                 null
@@ -67,7 +69,7 @@ class PinsRepository(
     suspend fun deletePin(pin: Pin) {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from("pins").delete {
+                postgrest.from(Tables.PINS).delete {
                     filter {
                         Pin::id eq pin.id
                     }
@@ -81,7 +83,7 @@ class PinsRepository(
     suspend fun updatePinImage(pinId: Uuid, image: Uri): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("pins").upload("$pinId.jpg", image) {
+                storage.from(Buckets.PINS).upload("$pinId.jpg", image) {
                     upsert = true
                 }
                 true
@@ -95,7 +97,7 @@ class PinsRepository(
     suspend fun getPinImageUrl(pinId: Uuid): String {
         return withContext(Dispatchers.IO) {
             try {
-                storage.from("pins").publicUrl("$pinId.jpg")
+                storage.from(Buckets.PINS).publicUrl("$pinId.jpg")
             } catch (e: Exception) {
                 Log.i("TAG", "Error fetching user avatar: ${e.message}")
                 ""

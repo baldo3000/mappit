@@ -2,6 +2,9 @@
     <string name="app_name">MappIt</string>
     <string name="mainactivity_name">MappIt</string>
 
+    <!-- General -->
+    <string name="coming_soon">Coming soon…</string>
+
     <!-- Navigation -->
     <string name="nav_back">Go back</string>
 
@@ -12,6 +15,7 @@
     <string name="screen_discovery">Discovery</string>
     <string name="screen_add_pin">Add Pin</string>
     <string name="screen_pin_info">Pin Info</string>
+    <string name="screen_bookmarks">Bookmarks</string>
 
     <!-- Auth -->
     <string name="auth_email">Email</string>

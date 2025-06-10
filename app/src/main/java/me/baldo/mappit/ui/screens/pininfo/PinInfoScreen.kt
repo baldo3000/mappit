@@ -1,5 +1,6 @@
 package me.baldo.mappit.ui.screens.pininfo
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,13 +46,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.model.Profile
-import java.time.format.TextStyle
-import java.util.Locale
+import me.baldo.mappit.utils.getPrettyFormat
 
 @Composable
 fun PinInfoScreen(
@@ -246,17 +244,7 @@ private fun DetailsSection(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
-                .let { dt ->
-                    val time = "%02d:%02d".format(dt.hour, dt.minute)
-                    val day = "%02d".format(dt.dayOfMonth)
-                    val month = dt.month.getDisplayName(
-                        TextStyle.SHORT,
-                        Locale.getDefault()
-                    )
-                    val year = "%02d".format(dt.year % 100)
-                    "$time · $day $month $year"
-                },
+            text = createdAt.getPrettyFormat(),
             style = MaterialTheme.typography.labelLargeEmphasized
         )
         Text(
@@ -274,6 +262,8 @@ private fun ActionsSection(
     isBookmarked: Boolean = false,
     toggleBookmark: (Boolean) -> Unit = {}
 ) {
+    val ctx = LocalContext.current
+
     Column {
         HorizontalDivider(
             color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer).copy(alpha = 0.5f)
@@ -298,6 +288,7 @@ private fun ActionsSection(
                 text = likes.toString(),
                 style = MaterialTheme.typography.labelLarge,
             )
+            Spacer(Modifier.width(4.dp))
             IconButton(
                 onClick = { toggleBookmark(!isBookmarked) },
                 shapes = IconButtonDefaults.shapes()
@@ -309,7 +300,13 @@ private fun ActionsSection(
                 )
             }
             IconButton(
-                onClick = {},
+                onClick = {
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.coming_soon),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
                 shapes = IconButtonDefaults.shapes()
             ) {
                 Icon(
@@ -319,7 +316,13 @@ private fun ActionsSection(
             }
             Spacer(Modifier.weight(1f))
             IconButton(
-                onClick = {},
+                onClick = {
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.coming_soon),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
                 shapes = IconButtonDefaults.shapes()
             ) {
                 Icon(

@@ -2,9 +2,11 @@ package me.baldo.mappit.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,6 +32,13 @@ sealed interface BottomBarTab {
         override val screen = MappItRoute.Discovery
     }
 
+    data object Bookmarks : BottomBarTab {
+        override val icon = Icons.Outlined.Bookmarks
+        override val iconSelected = Icons.Filled.Bookmarks
+        override val titleResID = R.string.screen_bookmarks
+        override val screen = MappItRoute.Bookmarks
+    }
+
     data object Profile : BottomBarTab {
         override val icon = Icons.Outlined.AccountCircle
         override val iconSelected = Icons.Filled.AccountCircle
@@ -40,7 +49,7 @@ sealed interface BottomBarTab {
     companion object {
         val tabs = listOf(
             Home,
-            Discovery,
+            Bookmarks,
             Profile
         )
     }
