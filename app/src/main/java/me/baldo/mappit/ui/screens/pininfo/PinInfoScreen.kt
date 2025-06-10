@@ -34,6 +34,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -170,6 +174,8 @@ private fun ProfileSection(
         image = Icons.Filled.AccountCircle,
     )
 
+    var showBackupImage by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -177,7 +183,13 @@ private fun ProfileSection(
             placeholder = placeholder,
             error = placeholder,
             model = ImageRequest.Builder(LocalContext.current)
-                .data(profile.avatarUrl)
+                .data(
+                    if (!showBackupImage) profile.avatarUrl
+                    else "https://ui-avatars.com/api/?name=${profile.username ?: profile.email}&background=random&size=256"
+                )
+                .listener(
+                    onError = { _, _ -> showBackupImage = true }
+                )
                 .build(),
             contentDescription = stringResource(R.string.profile_avatar),
             contentScale = ContentScale.Crop,

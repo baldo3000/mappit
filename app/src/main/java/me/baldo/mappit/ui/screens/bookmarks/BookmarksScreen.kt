@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -21,9 +23,15 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -97,6 +105,12 @@ private fun BookmarkRow(
     onPinClick: (Pin) -> Unit = {},
     onProfileClick: (Profile) -> Unit = {}
 ) {
+    val placeholder: Painter = rememberVectorPainter(
+        image = Icons.Filled.AccountCircle,
+    )
+
+    var showBackupImage by remember { mutableStateOf(false) }
+
     Column {
         Row(
             modifier = Modifier
@@ -106,8 +120,16 @@ private fun BookmarkRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
+                error = placeholder,
+                placeholder = placeholder,
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(profile.avatarUrl)
+                    .data(
+                        if (!showBackupImage) profile.avatarUrl
+                        else "https://ui-avatars.com/api/?name=${profile.username ?: profile.email}&background=random&size=256"
+                    )
+                    .listener(
+                        onError = { _, _ -> showBackupImage = true }
+                    )
                     .build(),
                 contentDescription = stringResource(R.string.profile_avatar),
                 contentScale = ContentScale.Crop,

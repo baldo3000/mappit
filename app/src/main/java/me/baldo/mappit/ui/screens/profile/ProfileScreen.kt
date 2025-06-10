@@ -70,12 +70,13 @@ private fun Profile(
     actions: ProfileActions,
     modifier: Modifier = Modifier
 ) {
-    val ctx = LocalContext.current
+    var showBackupImage by remember { mutableStateOf(false) }
 
     var newProfileImage by remember { mutableStateOf<Uri?>(null) }
 
     val imageLauncher = rememberImageLauncher { uri ->
         newProfileImage = uri
+        showBackupImage = false
     }
 
     val placeholder: Painter = rememberVectorPainter(
@@ -169,6 +170,13 @@ private fun Profile(
                                 error = placeholder,
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(newProfileImage ?: profile.avatarUrl)
+                                    .data(
+                                        if (!showBackupImage) newProfileImage ?: profile.avatarUrl
+                                        else "https://ui-avatars.com/api/?name=${profile.username ?: profile.email}&background=random&size=256"
+                                    )
+                                    .listener(
+                                        onError = { _, _ -> showBackupImage = true }
+                                    )
                                     .build(),
                                 contentDescription = stringResource(R.string.profile_avatar),
                                 contentScale = ContentScale.Crop,
