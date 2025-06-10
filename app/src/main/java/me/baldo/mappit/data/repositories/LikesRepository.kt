@@ -5,6 +5,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Like
+import me.baldo.mappit.data.model.Pin
 import kotlin.uuid.Uuid
 
 class LikesRepository(
@@ -12,6 +13,7 @@ class LikesRepository(
 ) {
     companion object {
         private const val LIKES_TABLE = "likes"
+        private const val PINS_TABLE = "pins"
     }
 
     suspend fun addLike(userId: Uuid, pinId: Uuid): Boolean {
@@ -52,6 +54,23 @@ class LikesRepository(
             } catch (e: Exception) {
                 Log.i("TAG", "Error fetching likes: ${e.message}")
                 emptyList()
+            }
+        }
+    }
+
+    suspend fun getLikesOfUser(userId: Uuid): Int {
+        return withContext(Dispatchers.IO) {
+            try {
+                val pinsOfUser =
+                    postgrest.from(PINS_TABLE).select { filter { Pin::userId eq userId } }
+                        .decodeList<Pin>().map { it.id }
+                val likesOfUser =
+                    postgrest.from(LIKES_TABLE).select() { filter { Like::pinId isIn pinsOfUser } }
+                        .decodeList<Like>()
+                likesOfUser.size
+            } catch (e: Exception) {
+                Log.i("TAG", "Error fetching likes: ${e.message}")
+                0
             }
         }
     }

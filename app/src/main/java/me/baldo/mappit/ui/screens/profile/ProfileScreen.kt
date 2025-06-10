@@ -47,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
 import me.baldo.mappit.utils.rememberImageLauncher
@@ -208,7 +207,7 @@ private fun Profile(
                             )
                             ProfileStatCard(
                                 stringResource(R.string.profile_likes),
-                                "-",
+                                state.likes,
                                 Modifier.weight(1f)
                             )
                         }

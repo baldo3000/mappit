@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.Profile
 import me.baldo.mappit.data.repositories.AuthenticationRepository
+import me.baldo.mappit.data.repositories.LikesRepository
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
 import kotlin.uuid.Uuid
@@ -20,7 +21,8 @@ data class ProfileState(
     val isEditing: Boolean = false,
     val editUsername: String = "",
 
-    val pins: String = "-"
+    val pins: String = "-",
+    val likes: String = "-"
 )
 
 interface ProfileActions {
@@ -34,7 +36,8 @@ interface ProfileActions {
 class ProfileViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val usersRepository: UsersRepository,
-    private val pinsRepository: PinsRepository
+    private val pinsRepository: PinsRepository,
+    private val likesRepository: LikesRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(ProfileState())
     val state = _state.asStateFlow()
@@ -88,6 +91,10 @@ class ProfileViewModel(
                         editUsername = profile?.username ?: "",
                         pins = profile?.let { pinsRepository.getPinsOfUser(it.id).size.toString() }
                             ?: "-",
+                        likes = profile?.let {
+                            likesRepository.getLikesOfUser(it.id)
+                                .let { if (it >= 0) it.toString() else "-" }
+                        } ?: "-",
                         isLoading = false
                     )
                 }

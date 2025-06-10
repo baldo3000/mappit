@@ -31,22 +31,6 @@ class UsersRepository(
         }
     }
 
-    /*
-    supabase.from("characters").update(
-    {
-       Country::name setTo "Han Solo"
-       //or
-       set("name", "Han Solo")
-    }
-) {
-    filter {
-        Character::id eq 1
-        //or
-        eq("id", 1)
-    }
-}
-     */
-
     suspend fun updateUser(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
             try {
