@@ -34,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
 import me.baldo.mappit.utils.rememberImageLauncher
@@ -57,6 +56,14 @@ fun ProfileSetupScreen(
 
     if (state.done) {
         onContinue()
+    }
+
+    fun isErrorFullName(): Boolean {
+        return state.fullName.isBlank()
+    }
+
+    fun isErrorUsername(): Boolean {
+        return state.username.isBlank() || state.username.contains(Regex("\\s"))
     }
 
     Column(
@@ -100,10 +107,28 @@ fun ProfileSetupScreen(
         }
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
+            value = state.fullName,
+            onValueChange = actions::onFullNameChanged,
+            label = { Text(stringResource(R.string.profile_setup_full_name)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            isError = isErrorFullName()
+        )
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
             value = state.username,
             onValueChange = actions::onUsernameChanged,
             label = { Text(stringResource(R.string.profile_setup_username)) },
             singleLine = true,
+            prefix = {
+                Text(
+                    text = "@",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Go
             ),
@@ -113,10 +138,11 @@ fun ProfileSetupScreen(
                     actions.onSaveProfile()
                 }
             ),
+            isError = isErrorUsername()
         )
         Spacer(Modifier.height(8.dp))
         Button(
-            enabled = !state.isSaving,
+            enabled = !state.isSaving && !isErrorFullName() && !isErrorUsername(),
             onClick = {
                 actions.onSaveProfile()
             },

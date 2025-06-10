@@ -91,6 +91,7 @@
     <!-- Profile -->
     <string name="profile_avatar">Avatar</string>
     <string name="profile_username">Username</string>
+    <string name="profile_full_name">Full Name</string>
     <string name="profile_edit">Edit profile</string>
     <string name="profile_save">Save profile</string>
     <string name="profile_sign_out">Sign Out</string>
@@ -102,6 +103,7 @@
     <!-- Profile Setup -->
     <string name="profile_setup_title">Set up your profile</string>
     <string name="profile_setup_avatar">Avatar</string>
+    <string name="profile_setup_full_name">Full Name</string>
     <string name="profile_setup_username">Username</string>
     <string name="profile_setup_save">Save profile</string>
     <string name="profile_setup_saving">Saving profile…</string>

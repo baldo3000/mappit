@@ -11,6 +11,7 @@ import me.baldo.mappit.data.repositories.UsersRepository
 import kotlin.uuid.Uuid
 
 data class ProfileSetupState(
+    val fullName: String = "",
     val username: String = "",
     val avatar: Uri = Uri.EMPTY,
     val isSaving: Boolean = false,
@@ -19,6 +20,7 @@ data class ProfileSetupState(
 
 interface ProfileSetupActions {
     fun onSaveProfile()
+    fun onFullNameChanged(fullName: String)
     fun onUsernameChanged(username: String)
     fun onAvatarChanged(image: Uri)
 }
@@ -36,11 +38,20 @@ class ProfileSetupViewModel(
             _state.update { it.copy(isSaving = true) }
             viewModelScope.launch {
                 usersRepository.getUser(userId)?.let {
-                    usersRepository.updateUser(it.copy(username = _state.value.username))
+                    usersRepository.updateUser(
+                        it.copy(
+                            username = _state.value.username,
+                            fullName = _state.value.fullName
+                        )
+                    )
                     usersRepository.updateUserAvatar(it, _state.value.avatar)
                 }
                 _state.update { it.copy(done = true) }
             }
+        }
+
+        override fun onFullNameChanged(fullName: String) {
+            _state.update { it.copy(fullName = fullName) }
         }
 
         override fun onUsernameChanged(username: String) {

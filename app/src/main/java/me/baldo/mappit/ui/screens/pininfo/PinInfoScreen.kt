@@ -200,7 +200,7 @@ private fun ProfileSection(
         Spacer(Modifier.width(8.dp))
         Column {
             Text(
-                text = "Name Surname",
+                text = profile.fullName ?: stringResource(R.string.pin_info_author_anon),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )

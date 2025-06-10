@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.AccountCircle
@@ -44,6 +46,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -82,6 +86,14 @@ private fun Profile(
     val placeholder: Painter = rememberVectorPainter(
         image = Icons.Filled.AccountCircle,
     )
+
+    fun isErrorFullName(): Boolean {
+        return state.editFullName.isBlank()
+    }
+
+    fun isErrorUsername(): Boolean {
+        return state.editUsername.isBlank() || state.editUsername.contains(Regex("\\s"))
+    }
 
     Column(
         modifier = modifier
@@ -128,8 +140,10 @@ private fun Profile(
                         if (state.isEditing) {
                             IconButton(
                                 onClick = {
-                                    newProfileImage?.let { actions.onAvatarChanged(it) }
-                                    actions.onSaveProfile()
+                                    if (!isErrorFullName() && !isErrorUsername()) {
+                                        newProfileImage?.let { actions.onAvatarChanged(it) }
+                                        actions.onSaveProfile()
+                                    }
                                 },
                                 shapes = IconButtonDefaults.shapes()
                             ) {
@@ -185,19 +199,46 @@ private fun Profile(
                                     .clip(CircleShape)
                             )
                         }
-                        if (state.isEditing) {
-                            OutlinedTextField(
-                                value = state.editUsername,
-                                onValueChange = actions::onUsernameChanged,
-                                label = { Text(stringResource(R.string.profile_username)) },
-                                singleLine = true
-                            )
-                        } else {
-                            Text(
-                                text = profile.username.toString(),
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            if (state.isEditing) {
+                                OutlinedTextField(
+                                    value = state.editFullName,
+                                    onValueChange = actions::onFullNameChanged,
+                                    label = { Text(stringResource(R.string.profile_full_name)) },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.Sentences,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    isError = isErrorFullName()
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                OutlinedTextField(
+                                    value = state.editUsername,
+                                    onValueChange = actions::onUsernameChanged,
+                                    prefix = {
+                                        Text(
+                                            text = "@",
+                                            style = MaterialTheme.typography.titleLarge,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                        )
+                                    },
+                                    label = { Text(stringResource(R.string.profile_username)) },
+                                    singleLine = true,
+                                    isError = isErrorUsername()
+                                )
+                            } else {
+                                Text(
+                                    text = profile.fullName.toString(),
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "@${profile.username}",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),

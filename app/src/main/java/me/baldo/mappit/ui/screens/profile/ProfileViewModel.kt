@@ -20,6 +20,7 @@ data class ProfileState(
 
     val isEditing: Boolean = false,
     val editUsername: String = "",
+    val editFullName: String = "",
 
     val pins: String = "-",
     val likes: String = "-"
@@ -30,6 +31,7 @@ interface ProfileActions {
     fun onSaveProfile()
     fun onLogout()
     fun onUsernameChanged(username: String)
+    fun onFullNameChanged(fullName: String)
     fun onAvatarChanged(image: Uri)
 }
 
@@ -51,7 +53,10 @@ class ProfileViewModel(
             viewModelScope.launch {
                 _state.update { state ->
                     state.copy(
-                        profile = state.profile?.copy(username = state.editUsername),
+                        profile = state.profile?.copy(
+                            username = state.editUsername,
+                            fullName = state.editFullName
+                        ),
                         isEditing = false
                     )
                 }
@@ -69,6 +74,10 @@ class ProfileViewModel(
 
         override fun onUsernameChanged(username: String) {
             _state.update { it.copy(editUsername = username) }
+        }
+
+        override fun onFullNameChanged(fullName: String) {
+            _state.update { it.copy(editFullName = fullName) }
         }
 
         override fun onAvatarChanged(image: Uri) {
@@ -89,6 +98,7 @@ class ProfileViewModel(
                     it.copy(
                         profile = profile,
                         editUsername = profile?.username ?: "",
+                        editFullName = profile?.fullName ?: "",
                         pins = profile?.let { pinsRepository.getPinsOfUser(it.id).size.toString() }
                             ?: "-",
                         likes = profile?.let {
