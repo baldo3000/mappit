@@ -106,4 +106,7 @@
     <string name="profile_setup_save">Save profile</string>
     <string name="profile_setup_saving">Saving profile…</string>
 
+    <!-- Bookmarks -->
+    <string name="bookmarks_error">There was an error retrieving your bookmarks</string>
+
 </resources>

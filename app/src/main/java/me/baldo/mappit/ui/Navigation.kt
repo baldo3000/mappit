@@ -5,11 +5,14 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -169,6 +172,7 @@ fun MappItNavGraph(
         exitTransition = { ExitTransition.None }
     ) {
         composable<MappItRoute.Home> {
+            val user = (auth.sessionStatus.value as? SessionStatus.Authenticated)?.session?.user
             homeVM.actions.updatePins()
             HomeOverlay(BottomBarTab.Home, navController) { innerPadding ->
                 HomeScreen(
@@ -177,7 +181,8 @@ fun MappItNavGraph(
                     onAddPin = { navController.navigate(MappItRoute.AddPin) },
                     onPinInfo = { navController.navigate(MappItRoute.PinInfo(it.toString())) },
                     theme = settingsState.theme,
-                    Modifier.padding(innerPadding)
+                    Modifier.padding(innerPadding),
+                    userId = user?.let { Uuid.parse(it.id) },
                 )
             }
         }
@@ -207,7 +212,19 @@ fun MappItNavGraph(
                     )
                 }
             } else {
-                TODO()
+                HomeOverlay(BottomBarTab.Bookmarks, navController) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.bookmarks_error),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
             }
         }
 

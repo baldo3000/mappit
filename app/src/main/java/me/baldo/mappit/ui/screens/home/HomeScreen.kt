@@ -105,7 +105,8 @@ fun HomeScreen(
     onAddPin: () -> Unit,
     onPinInfo: (pinId: Uuid) -> Unit,
     theme: Theme,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userId: Uuid? = null
 ) {
     val ctx = LocalContext.current
 
@@ -201,7 +202,8 @@ fun HomeScreen(
                 onAddPin = onAddPin,
                 onPinInfo = onPinInfo,
                 theme = theme,
-                modifier = modifier
+                modifier = modifier,
+                userId = userId
             )
     }
 }
@@ -215,7 +217,8 @@ private fun MapOverlay(
     onAddPin: () -> Unit,
     onPinInfo: (pinId: Uuid) -> Unit,
     theme: Theme,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userId: Uuid? = null
 ) {
     var visualInclined by rememberSaveable { mutableStateOf(true) }
     val cameraPositionState = rememberCameraPositionState {
@@ -282,7 +285,7 @@ private fun MapOverlay(
             }
         },
     ) {
-        Map(pins, onPinInfo, cameraPositionState, theme)
+        Map(pins, onPinInfo, cameraPositionState, theme, userId = userId)
     }
 }
 
@@ -292,7 +295,8 @@ private fun Map(
     onPinInfo: (pinId: Uuid) -> Unit,
     cameraPositionState: CameraPositionState,
     theme: Theme,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userId: Uuid? = null
 ) {
     val ctx = LocalContext.current
     val locationService = remember { LocationService(ctx) }
@@ -437,10 +441,10 @@ private fun Map(
                 Icon(
                     imageVector = Icons.Outlined.PinDrop,
                     contentDescription = "${stringResource(R.string.home_pin_id)} ${pin.id}",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = if (userId == pin.userId) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
                         .background(
-                            MaterialTheme.colorScheme.primaryContainer,
+                            if (userId == pin.userId) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer,
                             CircleShape
                         )
                         .padding(4.dp)
