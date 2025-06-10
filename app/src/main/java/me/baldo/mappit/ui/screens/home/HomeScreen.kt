@@ -10,7 +10,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,7 +53,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -457,9 +455,9 @@ private fun Map(
         Circle(
             center = cameraPositionState.position.target,
             radius = 4.0,
-            fillColor = Color.Blue,
-            strokeColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            strokeWidth = 5f
+            fillColor = MaterialTheme.colorScheme.onTertiary,
+            strokeColor = MaterialTheme.colorScheme.tertiary,
+            strokeWidth = 12f
         )
         Circle(
             center = cameraPositionState.position.target,
