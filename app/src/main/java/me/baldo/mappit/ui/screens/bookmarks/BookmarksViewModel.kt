@@ -20,6 +20,7 @@ data class BookmarksState(
 
 interface BookmarksActions {
     fun refreshBookmarks()
+    fun refreshBookmarksSilent()
 }
 
 class BookmarksViewModel(
@@ -47,6 +48,18 @@ class BookmarksViewModel(
                         isRefreshing = false
                     )
                 }
+            }
+        }
+
+        override fun refreshBookmarksSilent() {
+            viewModelScope.launch {
+                val bookmarks = bookmarksRepository.getBookmarksOfUser(userId)
+                    .mapNotNull { pin ->
+                        usersRepository.getUser(pin.userId)?.let { profile -> pin to profile }
+                    }
+                    .sortedByDescending { it.first.createdAt }
+                    .toMap()
+                _state.update { it.copy(bookmarks = bookmarks) }
             }
         }
     }

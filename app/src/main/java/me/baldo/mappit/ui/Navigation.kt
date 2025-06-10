@@ -201,6 +201,7 @@ fun MappItNavGraph(
                     val bookmarksVM = koinViewModel<BookmarksViewModel>(
                         parameters = { parametersOf(Uuid.parse(user.id)) }
                     )
+                    bookmarksVM.actions.refreshBookmarksSilent()
                     val bookmarksState by bookmarksVM.state.collectAsStateWithLifecycle()
 
                     BookmarksScreen(
