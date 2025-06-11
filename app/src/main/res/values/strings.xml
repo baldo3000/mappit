@@ -69,6 +69,7 @@
     <!-- Pin Info -->
     <string name="pin_info_edit">Edit Pin</string>
     <string name="pin_info_error">No pin information available.</string>
+    <string name="pin_info_id">Pin ID</string>
     <string name="pin_info_location">Pin locations</string>
     <string name="pin_info_author">Pin author</string>
     <string name="pin_info_author_anon">Anonymous</string>
@@ -77,6 +78,15 @@
     <string name="pin_info_bookmark">Bookmark</string>
     <string name="pin_info_chat">Chat</string>
     <string name="pin_info_more">More</string>
+    <string name="pin_info_share">Share</string>
+    <string name="pin_info_share_title">Share Pin</string>
+    <string name="pin_info_share_message">Check out this pin \"%1$s\" by user %2$s: %3$s</string>
+    <string name="pin_info_copy_id">Copy ID</string>
+    <string name="pin_info_delete">Delete</string>
+    <string name="pin_info_delete_message_title">Delete pin?</string>
+    <string name="pin_info_delete_message_body">This action cannot be undone</string>
+    <string name="pin_info_delete_message_confirm">Delete</string>
+    <string name="pin_info_delete_message_cancel">Cancel</string>
 
     <!-- Settings -->
     <string name="settings_category_UI">UI</string>

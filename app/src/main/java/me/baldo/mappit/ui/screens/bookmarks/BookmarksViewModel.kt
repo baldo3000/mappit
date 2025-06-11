@@ -2,6 +2,7 @@ package me.baldo.mappit.ui.screens.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -53,6 +54,7 @@ class BookmarksViewModel(
 
         override fun refreshBookmarksSilent() {
             viewModelScope.launch {
+                delay(100)
                 val bookmarks = bookmarksRepository.getBookmarksOfUser(userId)
                     .mapNotNull { pin ->
                         usersRepository.getUser(pin.userId)?.let { profile -> pin to profile }

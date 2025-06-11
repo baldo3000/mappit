@@ -1,10 +1,10 @@
 package me.baldo.mappit.ui.screens.addpin
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -54,6 +54,7 @@ class AddPinViewModel(
         override fun addPin(position: LatLng) {
             _state.update { it.copy(isSaving = true) }
             viewModelScope.launch {
+                delay(100)
                 _state.update { state ->
                     authenticationRepository.user?.let { user ->
                         val pin = AutoCompletePin(
@@ -63,7 +64,6 @@ class AddPinViewModel(
                             longitude = position.longitude,
                             userId = Uuid.parse(user.id)
                         )
-                        Log.i("TAG", "Adding pin: $pin")
                         pinsRepository.upsertPin(pin)?.let { addedPin ->
                             if (state.image == Uri.EMPTY || pinsRepository.updatePinImage(
                                     addedPin.id,

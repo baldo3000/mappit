@@ -20,10 +20,17 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,12 +38,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,22 +59,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.baldo.mappit.R
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.model.Profile
+import me.baldo.mappit.utils.copyToClipboard
 import me.baldo.mappit.utils.getPrettyFormat
+import me.baldo.mappit.utils.shareText
 
 @Composable
 fun PinInfoScreen(
     state: PinInfoState,
     actions: PinInfoActions,
+    goBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (state.isLoading) {
         Loading(modifier)
     } else {
-        PinInfo(state, actions, modifier)
+        PinInfo(state, actions, goBack, modifier)
     }
 }
 
@@ -85,6 +100,7 @@ private fun Loading(
 private fun PinInfo(
     state: PinInfoState,
     actions: PinInfoActions,
+    goBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     state.pin?.let { pin ->
@@ -101,7 +117,8 @@ private fun PinInfo(
                     likes = state.likes,
                     isLiked = state.isLiked,
                     isBookmarked = state.isBookmarked,
-                    actions = actions
+                    actions = actions,
+                    goBack = goBack
                 )
             }
         } ?: run {
@@ -138,8 +155,13 @@ private fun PinCard(
     likes: Int,
     isLiked: Boolean,
     isBookmarked: Boolean,
+    goBack: () -> Unit,
     actions: PinInfoActions
 ) {
+    val ctx = LocalContext.current
+
+    val scope = rememberCoroutineScope()
+
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -160,7 +182,34 @@ private fun PinCard(
                 isLiked = isLiked,
                 toggleLike = actions::toggleLike,
                 isBookmarked = isBookmarked,
-                toggleBookmark = actions::toggleBookmark
+                toggleBookmark = actions::toggleBookmark,
+                onShare = {
+                    shareText(
+                        context = ctx,
+                        title = ctx.getString(R.string.pin_info_share_title),
+                        text = ctx.getString(
+                            R.string.pin_info_share_message,
+                            pin.title,
+                            profile.username,
+                            pin.description
+                        )
+                    )
+                },
+                onCopyId = {
+                    copyToClipboard(
+                        ctx,
+                        ctx.getString(R.string.pin_info_id),
+                        pin.id.toString()
+                    )
+                },
+                onDelete = {
+                    actions.deletePin(pin)
+                    scope.launch {
+                        delay(100)
+                        goBack()
+                    }
+                },
+                deleteAvailable = actions.deleteAvailable()
             )
         }
     }
@@ -272,7 +321,11 @@ private fun ActionsSection(
     isLiked: Boolean = false,
     toggleLike: (Boolean) -> Unit = {},
     isBookmarked: Boolean = false,
-    toggleBookmark: (Boolean) -> Unit = {}
+    toggleBookmark: (Boolean) -> Unit = {},
+    onShare: () -> Unit = {},
+    onCopyId: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    deleteAvailable: Boolean
 ) {
     val ctx = LocalContext.current
 
@@ -326,22 +379,106 @@ private fun ActionsSection(
                     contentDescription = stringResource(R.string.pin_info_chat)
                 )
             }
-            Spacer(Modifier.weight(1f))
-            IconButton(
+            Spacer(Modifier.weight(13f))
+            OptionsDropDownMenu(onShare, onCopyId, onDelete, deleteAvailable)
+        }
+    }
+}
+
+@Composable
+private fun OptionsDropDownMenu(
+    onShare: () -> Unit = {},
+    onCopyId: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    deleteAvailable: Boolean
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(
+            onClick = { expanded = true },
+            shapes = IconButtonDefaults.shapes()
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.pin_info_more)
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.pin_info_share)) },
+                leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
                 onClick = {
-                    Toast.makeText(
-                        ctx,
-                        ctx.getString(R.string.coming_soon),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                },
-                shapes = IconButtonDefaults.shapes()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = stringResource(R.string.pin_info_more)
+                    expanded = false
+                    onShare()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.pin_info_copy_id)) },
+                leadingIcon = { Icon(Icons.Outlined.ContentCopy, contentDescription = null) },
+                onClick = {
+                    expanded = false
+                    onCopyId()
+                }
+            )
+            if (deleteAvailable) {
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.pin_info_delete)) },
+                    leadingIcon = { Icon(Icons.Outlined.DeleteOutline, contentDescription = null) },
+                    colors = MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.error,
+                        leadingIconColor = MaterialTheme.colorScheme.error
+                    ),
+                    onClick = {
+                        expanded = false
+                        showDeleteDialog = true
+                    }
                 )
             }
         }
     }
+
+    if (showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onDelete = {
+                showDeleteDialog = false
+                onDelete()
+            }
+        )
+    }
+}
+
+@Composable
+private fun DeleteConfirmDialog(
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Text(stringResource(R.string.pin_info_delete_message_cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDelete,
+                shapes = ButtonDefaults.shapes()
+            ) {
+                Text(stringResource(R.string.pin_info_delete_message_confirm))
+            }
+        },
+        title = { Text(stringResource(R.string.pin_info_delete_message_title)) },
+        text = { Text(stringResource(R.string.pin_info_delete_message_body)) },
+        icon = { Icon(Icons.Outlined.DeleteOutline, null) }
+    )
 }

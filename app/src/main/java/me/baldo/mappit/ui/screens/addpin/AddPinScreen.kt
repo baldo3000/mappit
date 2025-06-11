@@ -87,7 +87,8 @@ fun AddPinScreen(
                 capitalization = KeyboardCapitalization.Sentences,
                 autoCorrectEnabled = true,
                 imeAction = ImeAction.Next
-            )
+            ),
+            isError = addPinState.title.isBlank()
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(

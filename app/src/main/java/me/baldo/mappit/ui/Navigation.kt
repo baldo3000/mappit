@@ -283,7 +283,12 @@ fun MappItNavGraph(
             val pinInfoState by pinInfoVM.state.collectAsStateWithLifecycle()
 
             MenuOverlay(stringResource(R.string.screen_pin_info), navController) {
-                PinInfoScreen(pinInfoState, pinInfoVM.actions, Modifier.padding(it))
+                PinInfoScreen(
+                    pinInfoState,
+                    pinInfoVM.actions,
+                    navController::navigateUp,
+                    Modifier.padding(it)
+                )
             }
         }
 

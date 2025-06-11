@@ -29,6 +29,8 @@ data class PinInfoState(
 interface PinInfoActions {
     fun toggleLike(liked: Boolean)
     fun toggleBookmark(bookmarked: Boolean)
+    fun deletePin(pin: Pin)
+    fun deleteAvailable(): Boolean
 }
 
 class PinInfoViewModel(
@@ -83,6 +85,16 @@ class PinInfoViewModel(
                     }
                 }
             }
+        }
+
+        override fun deletePin(pin: Pin) {
+            viewModelScope.launch {
+                pinsRepository.deletePin(pin)
+            }
+        }
+
+        override fun deleteAvailable(): Boolean {
+            return authenticationRepository.user?.id == state.value.pin?.userId?.toString()
         }
     }
 
