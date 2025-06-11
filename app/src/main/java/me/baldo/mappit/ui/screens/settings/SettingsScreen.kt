@@ -1,6 +1,7 @@
 package me.baldo.mappit.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,14 +9,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.baldo.mappit.R
+import me.baldo.mappit.utils.rememberBiometricsHelper
 
 @Composable
 fun SettingsScreen(
@@ -42,6 +50,15 @@ fun SettingsScreen(
         ThemeRadioRow(
             currentTheme = settingsState.theme,
             onThemeChanged = settingsActions::onThemeChanged
+        )
+        Category(stringResource(R.string.settings_category_UI))
+        SwitchRowWithDescriptionBiometric(
+            text = stringResource(R.string.settings_lock),
+            description = stringResource(R.string.settings_lock_description),
+            onLabel = stringResource(R.string.settings_lock_enable),
+            offLabel = stringResource(R.string.settings_lock_disable),
+            checked = settingsState.appLock,
+            onCheckedChange = settingsActions::onAppLockChanged
         )
     }
 }
@@ -65,17 +82,26 @@ private fun SwitchRowWithDescription(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val indication = ripple()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
+                interactionSource = interactionSource,
+                indication = indication,
                 role = Role.Switch,
                 onClickLabel = if (checked) offLabel else onLabel,
                 onClick = { onCheckedChange(!checked) })
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp)
+        ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleLarge,
@@ -84,14 +110,95 @@ private fun SwitchRowWithDescription(
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
-        Spacer(Modifier.weight(1f))
         Switch(
             checked = checked,
-            onCheckedChange = null
+            onCheckedChange = null,
+            thumbContent = if (checked) {
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else null,
+            interactionSource = interactionSource
+        )
+    }
+}
+
+@Composable
+private fun SwitchRowWithDescriptionBiometric(
+    text: String,
+    description: String? = null,
+    onLabel: String,
+    offLabel: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val indication = ripple()
+
+    val biometricsHelper = rememberBiometricsHelper(
+        dialogTitle = stringResource(R.string.settings_lock_confirm),
+        onAuthenticationSuccess = { onCheckedChange(true) }
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = indication,
+                role = Role.Switch,
+                onClickLabel = if (checked) offLabel else onLabel,
+                onClick = {
+                    if (checked) {
+                        onCheckedChange(false)
+                    } else {
+                        biometricsHelper.authenticate()
+                    }
+                }
+            )
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp)
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            if (description != null) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
+            thumbContent = if (checked) {
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else null,
+            interactionSource = interactionSource
         )
     }
 }
@@ -179,3 +286,4 @@ private fun ThemeRadioDialog(
         }
     )
 }
+

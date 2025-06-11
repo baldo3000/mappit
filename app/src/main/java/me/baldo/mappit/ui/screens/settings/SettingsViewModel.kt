@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.baldo.mappit.R
 import me.baldo.mappit.data.repositories.SettingsRepository
 
@@ -25,10 +26,12 @@ enum class Theme {
 
 data class SettingsState(
     val theme: Theme = Theme.SYSTEM,
+    val appLock: Boolean = false
 )
 
 interface SettingsActions {
     fun onThemeChanged(theme: Theme)
+    fun onAppLockChanged(appLock: Boolean)
 }
 
 class SettingsViewModel(
@@ -44,11 +47,23 @@ class SettingsViewModel(
                 settingsRepository.setTheme(theme)
             }
         }
+
+        override fun onAppLockChanged(appLock: Boolean) {
+            _state.update { it.copy(appLock = appLock) }
+            viewModelScope.launch {
+                settingsRepository.setAppLock(appLock)
+            }
+        }
     }
 
     init {
-        viewModelScope.launch {
-            _state.update { it.copy(theme = settingsRepository.theme.first()) }
+        runBlocking {
+            _state.update {
+                it.copy(
+                    theme = settingsRepository.theme.first(),
+                    appLock = settingsRepository.appLock.first()
+                )
+            }
         }
     }
 }

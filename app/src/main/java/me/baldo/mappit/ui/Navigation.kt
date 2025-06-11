@@ -3,7 +3,6 @@ package me.baldo.mappit.ui
 import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +32,7 @@ import me.baldo.mappit.ui.screens.bookmarks.BookmarksScreen
 import me.baldo.mappit.ui.screens.bookmarks.BookmarksViewModel
 import me.baldo.mappit.ui.screens.home.HomeScreen
 import me.baldo.mappit.ui.screens.home.HomeViewModel
+import me.baldo.mappit.ui.screens.lockscreen.LockScreen
 import me.baldo.mappit.ui.screens.pininfo.PinInfoScreen
 import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
 import me.baldo.mappit.ui.screens.profile.ProfileScreen
@@ -56,6 +56,9 @@ private const val TAG = "NavGraph"
 sealed interface MappItRoute {
     @Serializable
     data object Dummy : MappItRoute
+
+    @Serializable
+    data object LockScreen : MappItRoute
 
     @Serializable
     data object SignUp : MappItRoute
@@ -113,8 +116,11 @@ fun MappItNavGraph(
                         }
 
                         SessionSource.Storage -> {
-                            Log.i(TAG, "Session restored from storage")
-                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.Dummy::class.qualifiedName) {
+                            Log.i(
+                                TAG,
+                                "Session restored from storage, appLock: ${settingsState.appLock}"
+                            )
+                            if (!settingsState.appLock && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
@@ -137,7 +143,7 @@ fun MappItNavGraph(
 
                         is SessionSource.Refresh -> {
                             Log.i(TAG, "Session refreshed")
-                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.Dummy::class.qualifiedName) {
+                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
@@ -166,7 +172,7 @@ fun MappItNavGraph(
     val homeState by homeVM.state.collectAsStateWithLifecycle()
 
     NavHost(
-        startDestination = MappItRoute.Dummy,
+        startDestination = MappItRoute.LockScreen,
         navController = navController,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None }
@@ -230,7 +236,11 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.Dummy> {
-            Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainer))
+
+        }
+
+        composable<MappItRoute.LockScreen> {
+            LockScreen(settingsState.appLock) { navController.navigate(MappItRoute.Home) { popUpTo(0) } }
         }
 
         composable<MappItRoute.SignUp> {
