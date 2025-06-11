@@ -147,6 +147,7 @@ fun AddPinScreen(
                     shapes = ButtonDefaults.shapes(),
                     onClick = {
                         scope.launch {
+                            addPinActions.setIsSaving()
                             locationService.getCurrentLocation(true)?.let { position ->
                                 addPinActions.addPin(position)
                             }

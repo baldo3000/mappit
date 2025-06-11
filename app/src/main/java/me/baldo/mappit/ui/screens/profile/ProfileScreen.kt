@@ -105,8 +105,7 @@ private fun Profile(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            //verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.Start
         ) {
             state.profile?.let { profile ->

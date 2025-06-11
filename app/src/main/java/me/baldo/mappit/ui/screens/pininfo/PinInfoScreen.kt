@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -108,7 +109,7 @@ private fun PinInfo(
             Column(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 PinCard(
                     pin = pin,
@@ -162,55 +163,59 @@ private fun PinCard(
 
     val scope = rememberCoroutineScope()
 
-    Card(
-        shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            ProfileSection(profile)
-            BodySection(pin.title, pin.description)
-            ImageSection(imageUrl)
-            DetailsSection(pin.createdAt, pin.latitude, pin.longitude)
-            ActionsSection(
-                likes = likes,
-                isLiked = isLiked,
-                toggleLike = actions::toggleLike,
-                isBookmarked = isBookmarked,
-                toggleBookmark = actions::toggleBookmark,
-                onShare = {
-                    shareText(
-                        context = ctx,
-                        title = ctx.getString(R.string.pin_info_share_title),
-                        text = ctx.getString(
-                            R.string.pin_info_share_message,
-                            pin.title,
-                            profile.username,
-                            pin.description
-                        )
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    ProfileSection(profile)
+                    BodySection(pin.title, pin.description)
+                    ImageSection(imageUrl)
+                    DetailsSection(pin.createdAt, pin.latitude, pin.longitude)
+                    ActionsSection(
+                        likes = likes,
+                        isLiked = isLiked,
+                        toggleLike = actions::toggleLike,
+                        isBookmarked = isBookmarked,
+                        toggleBookmark = actions::toggleBookmark,
+                        onShare = {
+                            shareText(
+                                context = ctx,
+                                title = ctx.getString(R.string.pin_info_share_title),
+                                text = ctx.getString(
+                                    R.string.pin_info_share_message,
+                                    pin.title,
+                                    profile.username,
+                                    pin.description
+                                )
+                            )
+                        },
+                        onCopyId = {
+                            copyToClipboard(
+                                ctx,
+                                ctx.getString(R.string.pin_info_id),
+                                pin.id.toString()
+                            )
+                        },
+                        onDelete = {
+                            actions.deletePin(pin)
+                            scope.launch {
+                                delay(100)
+                                goBack()
+                            }
+                        },
+                        deleteAvailable = actions.deleteAvailable()
                     )
-                },
-                onCopyId = {
-                    copyToClipboard(
-                        ctx,
-                        ctx.getString(R.string.pin_info_id),
-                        pin.id.toString()
-                    )
-                },
-                onDelete = {
-                    actions.deletePin(pin)
-                    scope.launch {
-                        delay(100)
-                        goBack()
-                    }
-                },
-                deleteAvailable = actions.deleteAvailable()
-            )
+                }
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,6 +30,7 @@ data class AddPinState(
 interface AddPinActions {
     fun onUpdateTitle(title: String)
     fun onUpdateDescription(description: String)
+    fun setIsSaving()
     fun addPin(position: LatLng)
     fun onImageChanged(image: Uri)
 }
@@ -52,9 +52,7 @@ class AddPinViewModel(
         }
 
         override fun addPin(position: LatLng) {
-            _state.update { it.copy(isSaving = true) }
             viewModelScope.launch {
-                delay(100)
                 _state.update { state ->
                     authenticationRepository.user?.let { user ->
                         val pin = AutoCompletePin(
@@ -83,6 +81,10 @@ class AddPinViewModel(
                     }
                 }
             }
+        }
+
+        override fun setIsSaving() {
+            _state.update { it.copy(isSaving = true) }
         }
 
         override fun onImageChanged(image: Uri) {
