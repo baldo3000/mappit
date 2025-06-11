@@ -53,15 +53,17 @@ class BookmarksViewModel(
         }
 
         override fun refreshBookmarksSilent() {
-            viewModelScope.launch {
-                delay(100)
-                val bookmarks = bookmarksRepository.getBookmarksOfUser(userId)
-                    .mapNotNull { pin ->
-                        usersRepository.getUser(pin.userId)?.let { profile -> pin to profile }
-                    }
-                    .sortedByDescending { it.first.createdAt }
-                    .toMap()
-                _state.update { it.copy(bookmarks = bookmarks) }
+            if (!_state.value.isLoading) {
+                viewModelScope.launch {
+                    delay(100)
+                    val bookmarks = bookmarksRepository.getBookmarksOfUser(userId)
+                        .mapNotNull { pin ->
+                            usersRepository.getUser(pin.userId)?.let { profile -> pin to profile }
+                        }
+                        .sortedByDescending { it.first.createdAt }
+                        .toMap()
+                    _state.update { it.copy(bookmarks = bookmarks) }
+                }
             }
         }
     }

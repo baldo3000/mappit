@@ -294,10 +294,16 @@ fun MappItNavGraph(
 
         composable<MappItRoute.Profile> {
             val profileVm = koinViewModel<ProfileViewModel>()
+            profileVm.actions.refreshProfileSilent()
             val profileState by profileVm.state.collectAsStateWithLifecycle()
 
             HomeOverlay(BottomBarTab.Profile, navController) {
-                ProfileScreen(profileState, profileVm.actions, Modifier.padding(it))
+                ProfileScreen(
+                    profileState,
+                    profileVm.actions,
+                    { navController.navigate(MappItRoute.PinInfo(it.id.toString())) },
+                    Modifier.padding(it)
+                )
             }
         }
 

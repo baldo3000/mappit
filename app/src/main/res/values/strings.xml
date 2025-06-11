@@ -99,6 +99,7 @@
     <string name="settings_theme_cancel">Cancel</string>
 
     <!-- Profile -->
+    <string name="profile_error">There was an error loading profile</string>
     <string name="profile_avatar">Avatar</string>
     <string name="profile_username">Username</string>
     <string name="profile_full_name">Full Name</string>
@@ -110,6 +111,7 @@
     <string name="profile_pins">Pins</string>
     <string name="profile_likes">Likes</string>
     <string name="profile_chooser">Select an image</string>
+    <string name="profile_your_pins">Your pins:</string>
 
     <!-- Profile Setup -->
     <string name="profile_setup_title">Set up your profile</string>
