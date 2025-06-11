@@ -149,57 +149,59 @@ private fun SwitchRowWithDescriptionBiometric(
         onAuthenticationSuccess = { onCheckedChange(true) }
     )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = indication,
-                role = Role.Switch,
-                onClickLabel = if (checked) offLabel else onLabel,
-                onClick = {
-                    if (checked) {
-                        onCheckedChange(false)
-                    } else {
-                        biometricsHelper.authenticate()
-                    }
-                }
-            )
-            .padding(horizontal = 24.dp, vertical = 16.dp)
-    ) {
-        Column(
+    if (biometricsHelper.isBiometricAvailable()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 16.dp)
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            if (description != null) {
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = indication,
+                    role = Role.Switch,
+                    onClickLabel = if (checked) offLabel else onLabel,
+                    onClick = {
+                        if (checked) {
+                            onCheckedChange(false)
+                        } else {
+                            biometricsHelper.authenticate()
+                        }
+                    }
                 )
-            }
-        }
-        Switch(
-            checked = checked,
-            onCheckedChange = null,
-            thumbContent = if (checked) {
-                {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                        tint = MaterialTheme.colorScheme.primary
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp)
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                if (description != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
-            } else null,
-            interactionSource = interactionSource
-        )
+            }
+            Switch(
+                checked = checked,
+                onCheckedChange = null,
+                thumbContent = if (checked) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else null,
+                interactionSource = interactionSource
+            )
+        }
     }
 }
 

@@ -116,10 +116,7 @@ fun MappItNavGraph(
                         }
 
                         SessionSource.Storage -> {
-                            Log.i(
-                                TAG,
-                                "Session restored from storage, appLock: ${settingsState.appLock}"
-                            )
+                            Log.i(TAG, "Session restored from storage")
                             if (!settingsState.appLock && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
@@ -143,7 +140,7 @@ fun MappItNavGraph(
 
                         is SessionSource.Refresh -> {
                             Log.i(TAG, "Session refreshed")
-                            if (navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
+                            if (!settingsState.appLock && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
@@ -158,6 +155,7 @@ fun MappItNavGraph(
                 is SessionStatus.NotAuthenticated -> {
                     if (it.isSignOut) {
                         Log.i(TAG, "User signed out")
+                        settingsActions.onAppLockChanged(false)
                         navController.navigate(MappItRoute.SignIn) { popUpTo(0) }
                     } else {
                         Log.i(TAG, "User not signed in")
