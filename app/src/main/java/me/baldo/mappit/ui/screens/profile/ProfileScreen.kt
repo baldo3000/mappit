@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import me.baldo.mappit.R
+import me.baldo.mappit.ui.composables.AutoResizedText
 import me.baldo.mappit.utils.rememberImageLauncher
 
 @Composable
@@ -245,8 +246,8 @@ private fun Profile(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             ProfileStatCard(
-                                stringResource(R.string.profile_followers),
-                                "-",
+                                stringResource(R.string.profile_joined_on),
+                                state.joinedOn,
                                 Modifier.weight(1f)
                             )
                             ProfileStatCard(
@@ -285,15 +286,15 @@ private fun ProfileStatCard(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
+            AutoResizedText(
                 text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
             Text(
                 text = title,
-                color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer).copy(alpha = 0.8f),
+                color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer).copy(alpha = 0.67f),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center

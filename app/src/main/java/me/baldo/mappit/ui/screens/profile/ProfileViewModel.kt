@@ -12,6 +12,7 @@ import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.LikesRepository
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
+import me.baldo.mappit.utils.getPrettyFormatDay
 import kotlin.uuid.Uuid
 
 data class ProfileState(
@@ -22,6 +23,7 @@ data class ProfileState(
     val editUsername: String = "",
     val editFullName: String = "",
 
+    val joinedOn: String = "-",
     val pins: String = "-",
     val likes: String = "-"
 )
@@ -93,12 +95,12 @@ class ProfileViewModel(
         authenticationRepository.user?.let { user ->
             viewModelScope.launch {
                 val profile = usersRepository.getUser(Uuid.parse(user.id))
-                // Log.i("TAG", "Fetched profile: $profile")
                 _state.update {
                     it.copy(
                         profile = profile,
                         editUsername = profile?.username ?: "",
                         editFullName = profile?.fullName ?: "",
+                        joinedOn = profile?.createdAt?.getPrettyFormatDay() ?: "-",
                         pins = profile?.let { pinsRepository.getPinsOfUser(it.id).size.toString() }
                             ?: "-",
                         likes = profile?.let {

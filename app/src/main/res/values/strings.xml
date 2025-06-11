@@ -106,6 +106,7 @@
     <string name="profile_save">Save profile</string>
     <string name="profile_sign_out">Sign Out</string>
     <string name="profile_followers">Followers</string>
+    <string name="profile_joined_on">Joined on</string>
     <string name="profile_pins">Pins</string>
     <string name="profile_likes">Likes</string>
     <string name="profile_chooser">Select an image</string>
