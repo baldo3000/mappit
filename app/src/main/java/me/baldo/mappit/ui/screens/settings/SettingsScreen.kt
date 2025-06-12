@@ -51,7 +51,7 @@ fun SettingsScreen(
             currentTheme = settingsState.theme,
             onThemeChanged = settingsActions::onThemeChanged
         )
-        Category(stringResource(R.string.settings_category_UI))
+        Category(stringResource(R.string.settings_category_security))
         SwitchRowWithDescriptionBiometric(
             text = stringResource(R.string.settings_lock),
             description = stringResource(R.string.settings_lock_description),

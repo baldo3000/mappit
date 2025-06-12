@@ -90,7 +90,7 @@
 
     <!-- Settings -->
     <string name="settings_category_UI">UI</string>
-    <string name="settings_category_Security">Security</string>
+    <string name="settings_category_security">Security</string>
 
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_light">Light</string>
