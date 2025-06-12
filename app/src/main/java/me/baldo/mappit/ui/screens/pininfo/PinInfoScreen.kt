@@ -69,6 +69,7 @@ import me.baldo.mappit.data.model.Profile
 import me.baldo.mappit.utils.copyToClipboard
 import me.baldo.mappit.utils.getPrettyFormat
 import me.baldo.mappit.utils.shareText
+import java.util.Locale
 
 @Composable
 fun PinInfoScreen(
@@ -313,8 +314,9 @@ private fun DetailsSection(
             text = createdAt.getPrettyFormat(),
             style = MaterialTheme.typography.labelLargeEmphasized
         )
+        Spacer(Modifier.weight(1f))
         Text(
-            text = "",
+            text = String.format(Locale.UK, "%.4f, %.4f", latitude, longitude),
             style = MaterialTheme.typography.labelLargeEmphasized
         )
     }
