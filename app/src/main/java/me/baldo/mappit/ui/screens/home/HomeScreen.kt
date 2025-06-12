@@ -96,7 +96,7 @@ import me.baldo.mappit.utils.openWirelessSettings
 import me.baldo.mappit.utils.rememberMultiplePermissions
 import kotlin.uuid.Uuid
 
-private const val INTERACTION_DISTANCE = 100.0
+private const val INTERACTION_DISTANCE = 150.0
 
 @Composable
 fun HomeScreen(
