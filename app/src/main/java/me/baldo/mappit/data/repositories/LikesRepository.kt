@@ -61,7 +61,7 @@ class LikesRepository(
                     postgrest.from(Tables.PINS).select { filter { Pin::userId eq userId } }
                         .decodeList<Pin>().map { it.id }
                 val likesOfUser =
-                    postgrest.from(Tables.LIKES).select() { filter { Like::pinId isIn pinsOfUser } }
+                    postgrest.from(Tables.LIKES).select { filter { Like::pinId isIn pinsOfUser } }
                         .decodeList<Like>()
                 likesOfUser.size
             } catch (e: Exception) {

@@ -41,7 +41,7 @@ fun SignInScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    AuthForm() {
+    AuthForm {
         val authState = LocalAuthState.current
 
         Column(

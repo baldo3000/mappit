@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -82,7 +83,10 @@ fun ProfileSetupScreen(
         Spacer(Modifier.height(16.dp))
         Box(
             modifier = Modifier
-                .clickable {
+                .clickable(
+                    role = Role.Button,
+                    onClickLabel = stringResource(R.string.profile_setup_avatar_edit)
+                ) {
                     imageLauncher.selectImage()
                 }
                 .border(

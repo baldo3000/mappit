@@ -21,7 +21,7 @@ class UsersRepository(
     suspend fun getUser(id: Uuid): Profile? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from(Tables.PROFILES).select() {
+                postgrest.from(Tables.PROFILES).select {
                     filter {
                         Profile::id eq id
                     }

@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -240,7 +241,11 @@ private fun ProfileCard(
             ) {
                 Box(
                     modifier = Modifier
-                        .clickable(enabled = state.isEditing) {
+                        .clickable(
+                            enabled = state.isEditing,
+                            role = Role.Button,
+                            onClickLabel = stringResource(R.string.profile_avatar_edit)
+                        ) {
                             imageLauncher.selectImage()
                         }
                         .then(
@@ -389,7 +394,10 @@ private fun PinRow(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable() { onPinClick(pin) }
+                .clickable(
+                    role = Role.Button,
+                    onClickLabel = stringResource(R.string.pin_info_open)
+                ) { onPinClick(pin) }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

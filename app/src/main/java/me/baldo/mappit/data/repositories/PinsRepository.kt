@@ -20,7 +20,7 @@ class PinsRepository(
     suspend fun getPin(pinId: Uuid): Pin? {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from(Tables.PINS).select() {
+                postgrest.from(Tables.PINS).select {
                     filter {
                         Pin::id eq pinId
                     }
@@ -44,7 +44,7 @@ class PinsRepository(
     suspend fun getPinsOfUser(userId: Uuid): List<Pin> {
         return withContext(Dispatchers.IO) {
             try {
-                postgrest.from(Tables.PINS).select() {
+                postgrest.from(Tables.PINS).select {
                     filter {
                         Pin::userId eq userId
                     }

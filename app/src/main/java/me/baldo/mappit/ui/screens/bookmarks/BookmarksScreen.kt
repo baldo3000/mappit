@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -115,7 +116,10 @@ private fun BookmarkRow(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable() { onPinClick(pin) }
+                .clickable(
+                    role = Role.Button,
+                    onClickLabel = stringResource(R.string.pin_info_open)
+                ) { onPinClick(pin) }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -136,7 +140,7 @@ private fun BookmarkRow(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .clickable() { onProfileClick(profile) }
+                    .clickable { onProfileClick(profile) }
             )
             Spacer(Modifier.width(16.dp))
             Column {

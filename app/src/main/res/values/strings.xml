@@ -67,6 +67,7 @@
     <string name="add_pin_add_image">Add image</string>
 
     <!-- Pin Info -->
+    <string name="pin_info_open">Open pin info</string>
     <string name="pin_info_edit">Edit Pin</string>
     <string name="pin_info_error">No pin information available.</string>
     <string name="pin_info_id">Pin ID</string>
@@ -107,6 +108,7 @@
     <!-- Profile -->
     <string name="profile_error">There was an error loading profile</string>
     <string name="profile_avatar">Avatar</string>
+    <string name="profile_avatar_edit">Edit avatar</string>
     <string name="profile_username">Username</string>
     <string name="profile_full_name">Full Name</string>
     <string name="profile_edit">Edit profile</string>
@@ -122,6 +124,7 @@
     <!-- Profile Setup -->
     <string name="profile_setup_title">Set up your profile</string>
     <string name="profile_setup_avatar">Avatar</string>
+    <string name="profile_setup_avatar_edit">Edit avatar</string>
     <string name="profile_setup_full_name">Full Name</string>
     <string name="profile_setup_username">Username</string>
     <string name="profile_setup_save">Save profile</string>
