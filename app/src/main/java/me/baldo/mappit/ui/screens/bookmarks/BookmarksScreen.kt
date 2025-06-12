@@ -15,7 +15,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -82,18 +84,34 @@ private fun Bookmarks(
         },
         modifier = modifier.fillMaxSize()
     ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                Spacer(Modifier.height(16.dp))
-            }
+        if (state.bookmarks.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    Spacer(Modifier.height(16.dp))
+                }
 
-            items(state.bookmarks.entries.toList()) { (pin, profile) ->
-                BookmarkRow(
-                    pin = pin,
-                    profile = profile,
-                    onPinClick = onPinClick,
-                    onProfileClick = onProfileClick
+                items(state.bookmarks.entries.toList()) { (pin, profile) ->
+                    BookmarkRow(
+                        pin = pin,
+                        profile = profile,
+                        onPinClick = onPinClick,
+                        onProfileClick = onProfileClick
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(Icons.Outlined.Bookmarks, null, modifier = Modifier.size(48.dp))
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.bookmarks_empty),
+                    style = MaterialTheme.typography.titleLarge
                 )
+                Spacer(Modifier.height(32.dp))
             }
         }
     }

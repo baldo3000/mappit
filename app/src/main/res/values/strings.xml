@@ -132,6 +132,7 @@
 
     <!-- Bookmarks -->
     <string name="bookmarks_error">There was an error retrieving your bookmarks</string>
+    <string name="bookmarks_empty">No bookmarks saved yet</string>
 
     <!-- LockScreen -->
     <string name="lockscreen_title">MappIt locked</string>
