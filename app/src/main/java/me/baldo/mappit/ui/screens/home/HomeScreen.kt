@@ -404,7 +404,7 @@ private fun Map(
             isMyLocationEnabled = false,
             mapType = MapType.NORMAL,
             mapStyleOptions = getDynamicMapStyle(),
-            minZoomPreference = 12f,
+            minZoomPreference = 13f,
             maxZoomPreference = 20f
         ),
         uiSettings = MapUiSettings(

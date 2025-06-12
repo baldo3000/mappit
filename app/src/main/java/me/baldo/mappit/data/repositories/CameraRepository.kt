@@ -44,7 +44,7 @@ class CameraRepository(
         CameraPositionDto(
             latitude = preferences[LAST_LATITUDE_KEY] ?: 0.0,
             longitude = preferences[LAST_LONGITUDE_KEY] ?: 0.0,
-            zoom = preferences[LAST_ZOOM_KEY] ?: 0f,
+            zoom = preferences[LAST_ZOOM_KEY] ?: 18f,
             bearing = preferences[LAST_BEARING_KEY] ?: 0f
         )
     }
