@@ -32,21 +32,22 @@ class ProfileSetupViewModel(
     private val _state = MutableStateFlow(ProfileSetupState())
     val state = _state.asStateFlow()
 
-
     val actions = object : ProfileSetupActions {
         override fun onSaveProfile() {
             _state.update { it.copy(isSaving = true) }
             viewModelScope.launch {
                 usersRepository.getUser(userId)?.let {
-                    usersRepository.updateUser(
-                        it.copy(
-                            username = _state.value.username,
-                            fullName = _state.value.fullName
-                        )
-                    )
-                    usersRepository.updateUserAvatar(it, _state.value.avatar)
+                    val updatedUser =
+                        it.copy(username = _state.value.username, fullName = _state.value.fullName)
+                    if (_state.value.avatar == Uri.EMPTY) {
+                        usersRepository.updateUser(updatedUser)
+                    } else {
+                        usersRepository.updateUserAvatar(updatedUser, _state.value.avatar)
+                    }
+                    _state.update { it.copy(done = true) }
+                } ?: run {
+                    _state.update { it.copy(isSaving = false) }
                 }
-                _state.update { it.copy(done = true) }
             }
         }
 
