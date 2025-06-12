@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep interface me.baldo.mappit.ui.MappItRoute
+-keep class me.baldo.mappit.ui.MappItRoute$* {
+    *;
+}
