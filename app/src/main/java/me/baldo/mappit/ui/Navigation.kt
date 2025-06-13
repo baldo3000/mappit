@@ -46,6 +46,7 @@ import me.baldo.mappit.ui.screens.signin.SignInScreen
 import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
+import me.baldo.mappit.utils.rememberBiometricsHelper
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -98,8 +99,11 @@ fun MappItNavGraph(
     settingsActions: SettingsActions
 ) {
     val auth = koinInject<Auth>()
+    val biometricHelper = rememberBiometricsHelper("helper") {}
 
     LaunchedEffect(Unit) {
+        val isBiometricAvailable = biometricHelper.isBiometricAvailable()
+        if (!isBiometricAvailable) settingsActions.onAppLockChanged(false)
         auth.sessionStatus.collect {
             when (it) {
                 is SessionStatus.Authenticated -> {
@@ -117,7 +121,7 @@ fun MappItNavGraph(
 
                         SessionSource.Storage -> {
                             Log.i(TAG, "Session restored from storage")
-                            if (!settingsState.appLock && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
+                            if (!(settingsState.appLock && isBiometricAvailable) && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
@@ -140,7 +144,7 @@ fun MappItNavGraph(
 
                         is SessionSource.Refresh -> {
                             Log.i(TAG, "Session refreshed")
-                            if (!settingsState.appLock && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
+                            if (!(settingsState.appLock && isBiometricAvailable) && navController.currentBackStackEntry?.destination?.route == MappItRoute.LockScreen::class.qualifiedName) {
                                 navController.navigate(MappItRoute.Home) { popUpTo(0) }
                             }
                         }
