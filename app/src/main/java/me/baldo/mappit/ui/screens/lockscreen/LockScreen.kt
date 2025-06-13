@@ -26,7 +26,22 @@ import me.baldo.mappit.utils.rememberBiometricsHelper
 
 @Composable
 fun LockScreen(
-    authenticateOnLaunch: Boolean,
+    lock: Boolean,
+    onAuthenticationSuccess: () -> Unit,
+) {
+    if (lock) {
+        LockScreenLock(onAuthenticationSuccess)
+    } else {
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceContainer),
+        )
+    }
+}
+
+@Composable
+private fun LockScreenLock(
     onAuthenticationSuccess: () -> Unit,
 ) {
     val biometricsHelper = rememberBiometricsHelper(
@@ -35,7 +50,7 @@ fun LockScreen(
     )
 
     LaunchedEffect(Unit) {
-        if (authenticateOnLaunch) biometricsHelper.authenticate()
+        biometricsHelper.authenticate()
     }
 
     Box(
