@@ -100,10 +100,11 @@
     <string name="settings_theme_choose">Choose theme</string>
     <string name="settings_theme_cancel">Cancel</string>
     <string name="settings_lock">App lock</string>
+    <string name="settings_lock_unavailable">You need to add a screen lock to enable this feature</string>
     <string name="settings_lock_description">When this feature is enabled you will need to use your fingerprint, face or device pin to unlock MappIt.</string>
     <string name="settings_lock_enable">Enable app lock</string>
     <string name="settings_lock_disable">Disable app lock</string>
-    <string name="settings_lock_confirm">Confirm biometric</string>
+    <string name="settings_lock_confirm">Confirm lock</string>
 
     <!-- Profile -->
     <string name="profile_error">There was an error loading profile</string>

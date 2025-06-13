@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -55,6 +56,7 @@ fun SettingsScreen(
         SwitchRowWithDescriptionBiometric(
             text = stringResource(R.string.settings_lock),
             description = stringResource(R.string.settings_lock_description),
+            unavailableMessage = stringResource(R.string.settings_lock_unavailable),
             onLabel = stringResource(R.string.settings_lock_enable),
             offLabel = stringResource(R.string.settings_lock_disable),
             checked = settingsState.appLock,
@@ -136,6 +138,7 @@ private fun SwitchRowWithDescription(
 private fun SwitchRowWithDescriptionBiometric(
     text: String,
     description: String? = null,
+    unavailableMessage: String,
     onLabel: String,
     offLabel: String,
     checked: Boolean,
@@ -149,59 +152,61 @@ private fun SwitchRowWithDescriptionBiometric(
         onAuthenticationSuccess = { onCheckedChange(true) }
     )
 
-    if (biometricsHelper.isBiometricAvailable()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = indication,
-                    role = Role.Switch,
-                    onClickLabel = if (checked) offLabel else onLabel,
-                    onClick = {
-                        if (checked) {
-                            onCheckedChange(false)
-                        } else {
-                            biometricsHelper.authenticate()
-                        }
+    val isBiometricAvailable = biometricsHelper.isBiometricAvailable()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = isBiometricAvailable,
+                interactionSource = interactionSource,
+                indication = indication,
+                role = Role.Switch,
+                onClickLabel = if (checked) offLabel else onLabel,
+                onClick = {
+                    if (checked) {
+                        onCheckedChange(false)
+                    } else {
+                        biometricsHelper.authenticate()
                     }
-                )
-                .padding(horizontal = 24.dp, vertical = 16.dp)
+                }
+            )
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .alpha(if (isBiometricAvailable) 1f else 0.5f)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 16.dp)
-            ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            if (description != null) {
+                Spacer(Modifier.height(2.dp))
                 Text(
-                    text = text,
-                    style = MaterialTheme.typography.titleLarge,
+                    text = if (isBiometricAvailable) description else unavailableMessage,
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                if (description != null) {
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodyMedium
+            }
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
+            thumbContent = if (checked) {
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
-            Switch(
-                checked = checked,
-                onCheckedChange = null,
-                thumbContent = if (checked) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                } else null,
-                interactionSource = interactionSource
-            )
-        }
+            } else null,
+            interactionSource = interactionSource
+        )
     }
 }
 
