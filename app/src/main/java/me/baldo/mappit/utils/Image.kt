@@ -78,10 +78,7 @@ fun rememberImageLauncher(
                     }
                 val chooserIntent =
                     Intent.createChooser(photoPickerIntent, chooserText).apply {
-                        putExtra(
-                            Intent.EXTRA_INITIAL_INTENTS,
-                            arrayOf(cameraIntent, photoPickerIntent)
-                        )
+                        putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
                     }
                 launcher.launch(chooserIntent)
             }
