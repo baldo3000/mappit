@@ -32,6 +32,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MappIt"
         tools:targetApi="36">
+        <profileable android:shell="true" tools:targetApi="q" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -44,9 +46,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_KEY}" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -56,6 +60,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path_provider" />
         </provider>
+
     </application>
 
 </manifest>
