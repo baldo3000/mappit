@@ -79,6 +79,9 @@ fun AddPinScreen(
         )
         Spacer(Modifier.height(16.dp))
         OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp),
             value = addPinState.title,
             onValueChange = addPinActions::onUpdateTitle,
             singleLine = true,
@@ -92,6 +95,9 @@ fun AddPinScreen(
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp),
             value = addPinState.description,
             onValueChange = addPinActions::onUpdateDescription,
             minLines = 5,
@@ -102,9 +108,11 @@ fun AddPinScreen(
                 autoCorrectEnabled = true
             )
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         Box(
-            modifier = Modifier.padding(horizontal = 64.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp)
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)

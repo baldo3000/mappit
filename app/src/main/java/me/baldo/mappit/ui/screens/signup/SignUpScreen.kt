@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -59,6 +60,7 @@ fun SignUpScreen(
             )
             Spacer(Modifier.height(12.dp))
             OutlinedEmailField(
+                modifier = Modifier.width(280.dp),
                 value = signUpState.email,
                 onValueChange = signUpActions::onUpdateEmail,
                 label = { Text(stringResource(R.string.auth_email)) },
@@ -68,6 +70,7 @@ fun SignUpScreen(
                 )
             )
             OutlinedPasswordField(
+                modifier = Modifier.width(280.dp),
                 value = signUpState.password,
                 onValueChange = signUpActions::onUpdatePassword,
                 label = { Text(stringResource(R.string.auth_password)) },

@@ -280,18 +280,24 @@ private fun ProfileCard(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (state.isEditing) {
                         OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp),
                             value = state.editFullName,
                             onValueChange = actions::onFullNameChanged,
                             label = { Text(stringResource(R.string.profile_full_name)) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Sentences,
+                                capitalization = KeyboardCapitalization.Words,
                                 imeAction = ImeAction.Next
                             ),
                             isError = isErrorFullName()
                         )
                         Spacer(Modifier.height(4.dp))
                         OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp),
                             value = state.editUsername,
                             onValueChange = actions::onUsernameChanged,
                             prefix = {
