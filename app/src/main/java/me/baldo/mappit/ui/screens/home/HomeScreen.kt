@@ -42,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -142,7 +141,7 @@ fun HomeScreen(
         }
     }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_START) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         locationPermissions.launchPermissionRequest()
         update()
         homeActions.setLoading(false)
@@ -328,27 +327,24 @@ private fun Map(
         }
     }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_START) {
-        scope.launch {
-            locationService.getCurrentLocation()?.let { newPosition ->
-                cameraPositionState.position =
-                    CameraPosition(
-                        LatLng(newPosition.latitude, newPosition.longitude),
-                        cameraPositionState.position.zoom,
-                        cameraPositionState.position.tilt,
-                        cameraPositionState.position.bearing
-                    )
-            }
-        }
-    }
-
     // Start location updates when entering the Map route
-    LaunchedEffect(Unit) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         if (ActivityCompat.checkSelfPermission(
                 ctx,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED && isLocationEnabled(ctx)
         ) {
+            scope.launch {
+                locationService.getCurrentLocation()?.let { newPosition ->
+                    cameraPositionState.position =
+                        CameraPosition(
+                            LatLng(newPosition.latitude, newPosition.longitude),
+                            cameraPositionState.position.zoom,
+                            cameraPositionState.position.tilt,
+                            cameraPositionState.position.bearing
+                        )
+                }
+            }
             fusedLocationClient.requestLocationUpdates(
                 LocationRequest.Builder(1000L).build(),
                 locationCallback,
@@ -357,11 +353,9 @@ private fun Map(
         }
     }
 
-    // Stop location updates when exiting the Map route
-    DisposableEffect(Unit) {
-        onDispose {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-        }
+    // Stop location updates when entering the Map route
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     // Update camera when either location or bearing changes
