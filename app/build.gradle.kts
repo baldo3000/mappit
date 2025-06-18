@@ -6,6 +6,12 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 android {
     namespace = "me.baldo.mappit"
     compileSdk = 36
@@ -31,11 +37,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
         freeCompilerArgs += listOf(
             "-opt-in=kotlin.uuid.ExperimentalUuidApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
