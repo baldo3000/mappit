@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -422,33 +423,36 @@ private fun Map(
             Theme.SYSTEM -> ComposeMapColorScheme.FOLLOW_SYSTEM
         }
     ) {
-        for (pin in pins) {
-            MarkerInfoWindowComposable(
-                state = rememberUpdatedMarkerState(LatLng(pin.latitude, pin.longitude)),
-                onClick = {
-                    if (calculateDistance(
-                            cameraPositionState.position.target,
-                            LatLng(pin.latitude, pin.longitude)
-                        ) <= INTERACTION_DISTANCE
-                    ) {
-                        selectedPin = pin
-                    } else {
-                        Toast.makeText(ctx, R.string.home_pin_get_closer, Toast.LENGTH_SHORT).show()
+        key(pins) {
+            for (pin in pins) {
+                MarkerInfoWindowComposable(
+                    state = rememberUpdatedMarkerState(LatLng(pin.latitude, pin.longitude)),
+                    onClick = {
+                        if (calculateDistance(
+                                cameraPositionState.position.target,
+                                LatLng(pin.latitude, pin.longitude)
+                            ) <= INTERACTION_DISTANCE
+                        ) {
+                            selectedPin = pin
+                        } else {
+                            Toast.makeText(ctx, R.string.home_pin_get_closer, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        true
                     }
-                    true
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PinDrop,
+                        contentDescription = "${stringResource(R.string.home_pin_id)} ${pin.id}",
+                        tint = if (userId == pin.userId) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier
+                            .background(
+                                if (userId == pin.userId) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                                CircleShape
+                            )
+                            .padding(4.dp)
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.PinDrop,
-                    contentDescription = "${stringResource(R.string.home_pin_id)} ${pin.id}",
-                    tint = if (userId == pin.userId) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .background(
-                            if (userId == pin.userId) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer,
-                            CircleShape
-                        )
-                        .padding(4.dp)
-                )
             }
         }
 
