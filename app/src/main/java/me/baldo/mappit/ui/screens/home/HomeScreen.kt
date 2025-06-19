@@ -229,6 +229,7 @@ private fun MapOverlay(
         )
     }
     val scope = rememberCoroutineScope()
+
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         saveCameraPosition(
             CameraPositionDto(
@@ -239,6 +240,11 @@ private fun MapOverlay(
             )
         )
     }
+
+    LaunchedEffect(cameraPositionState.position.tilt) {
+        if (cameraPositionState.position.tilt == 0f) visualInclined = false
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButtonPosition = FabPosition.Start,
