@@ -28,6 +28,7 @@ kotlin {
 android {
     namespace = "me.baldo.mappit"
     compileSdk = 36
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "me.baldo.mappit"
@@ -53,6 +54,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
