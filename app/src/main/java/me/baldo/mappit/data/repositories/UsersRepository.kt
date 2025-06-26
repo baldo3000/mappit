@@ -10,11 +10,12 @@ import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Profile
 import me.baldo.mappit.data.remote.Buckets
 import me.baldo.mappit.data.remote.Tables
+import javax.inject.Inject
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
 
-class UsersRepository(
+class UsersRepository @Inject constructor(
     private val postgrest: Postgrest,
     private val storage: Storage
 ) {

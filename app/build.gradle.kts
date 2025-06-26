@@ -66,7 +66,6 @@ dependencies {
     implementation(libs.supabase.compose.auth.ui)
     implementation(libs.supabase.storage.kt)
     implementation(libs.ktor.client.android)
-    implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.maps.compose)
@@ -76,6 +75,8 @@ dependencies {
     implementation(libs.coil3.compose)
     implementation(libs.coil3.network.okhttp)
     implementation(libs.androidx.biometric)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)

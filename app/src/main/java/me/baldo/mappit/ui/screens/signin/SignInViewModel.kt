@@ -2,12 +2,14 @@ package me.baldo.mappit.ui.screens.signin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.SignInResult
+import javax.inject.Inject
 
 data class SignInState(
     val email: String,
@@ -23,7 +25,8 @@ interface SignInActions {
     fun signIn()
 }
 
-class SignInViewModel(
+@HiltViewModel
+class SignInViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(SignInState("", ""))

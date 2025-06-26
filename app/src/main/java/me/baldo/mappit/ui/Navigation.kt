@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,9 +48,6 @@ import me.baldo.mappit.ui.screens.signin.SignInViewModel
 import me.baldo.mappit.ui.screens.signup.SignUpScreen
 import me.baldo.mappit.ui.screens.signup.SignUpViewModel
 import me.baldo.mappit.utils.rememberBiometricsHelper
-import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.Uuid
 
 private const val TAG = "NavGraph"
@@ -94,11 +92,11 @@ sealed interface MappItRoute {
 
 @Composable
 fun MappItNavGraph(
+    auth: Auth,
     navController: NavHostController,
     settingsState: SettingsState,
     settingsActions: SettingsActions
 ) {
-    val auth = koinInject<Auth>()
     val biometricHelper = rememberBiometricsHelper("helper") {}
 
     LaunchedEffect(Unit) {
@@ -170,7 +168,7 @@ fun MappItNavGraph(
         }
     }
 
-    val homeVM = koinViewModel<HomeViewModel>()
+    val homeVM: HomeViewModel = hiltViewModel()
     val homeState by homeVM.state.collectAsStateWithLifecycle()
 
     NavHost(
@@ -206,8 +204,10 @@ fun MappItNavGraph(
 
             if (user != null) {
                 HomeOverlay(BottomBarTab.Bookmarks, navController) {
-                    val bookmarksVM = koinViewModel<BookmarksViewModel>(
-                        parameters = { parametersOf(Uuid.parse(user.id)) }
+                    val bookmarksVM: BookmarksViewModel = hiltViewModel(
+                        creationCallback = { factory: BookmarksViewModel.BookmarksViewModelFactory ->
+                            factory.create(userId = Uuid.parse(user.id))
+                        }
                     )
                     bookmarksVM.actions.refreshBookmarksSilent()
                     val bookmarksState by bookmarksVM.state.collectAsStateWithLifecycle()
@@ -246,7 +246,7 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.SignUp> {
-            val signUpVM = koinViewModel<SignUpViewModel>()
+            val signUpVM: SignUpViewModel = hiltViewModel()
             val signUpState by signUpVM.state.collectAsStateWithLifecycle()
             SignUpScreen(
                 signUpState = signUpState,
@@ -256,7 +256,7 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.SignIn> {
-            val signInVM = koinViewModel<SignInViewModel>()
+            val signInVM: SignInViewModel = hiltViewModel()
             val signInState by signInVM.state.collectAsStateWithLifecycle()
             SignInScreen(
                 signInState = signInState,
@@ -276,7 +276,7 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.AddPin> {
-            val addPinViewModel = koinViewModel<AddPinViewModel>()
+            val addPinViewModel: AddPinViewModel = hiltViewModel()
             val addPinState by addPinViewModel.state.collectAsStateWithLifecycle()
 
             MenuOverlay(stringResource(R.string.screen_add_pin), navController) {
@@ -291,7 +291,11 @@ fun MappItNavGraph(
 
         composable<MappItRoute.PinInfo> { backStackEntry ->
             val pinId = Uuid.parse(backStackEntry.toRoute<MappItRoute.PinInfo>().pinId)
-            val pinInfoVM = koinViewModel<PinInfoViewModel>(parameters = { parametersOf(pinId) })
+            val pinInfoVM: PinInfoViewModel = hiltViewModel(
+                creationCallback = { factory: PinInfoViewModel.PinInfoViewModelFactory ->
+                    factory.create(pinId = pinId)
+                }
+            )
             val pinInfoState by pinInfoVM.state.collectAsStateWithLifecycle()
 
             MenuOverlay(stringResource(R.string.screen_pin_info), navController) {
@@ -305,7 +309,7 @@ fun MappItNavGraph(
         }
 
         composable<MappItRoute.Profile> {
-            val profileVm = koinViewModel<ProfileViewModel>()
+            val profileVm: ProfileViewModel = hiltViewModel()
             profileVm.actions.refreshProfileSilent()
             val profileState by profileVm.state.collectAsStateWithLifecycle()
 
@@ -321,8 +325,11 @@ fun MappItNavGraph(
 
         composable<MappItRoute.ProfileSetup> { backStackEntry ->
             val userId = Uuid.parse(backStackEntry.toRoute<MappItRoute.ProfileSetup>().userId)
-            val profileSetupVM =
-                koinViewModel<ProfileSetupViewModel>(parameters = { parametersOf(userId) })
+            val profileSetupVM: ProfileSetupViewModel = hiltViewModel(
+                creationCallback = { factory: ProfileSetupViewModel.ProfileSetupViewModelFactory ->
+                    factory.create(userId = userId)
+                }
+            )
             val profileSetupState by profileSetupVM.state.collectAsStateWithLifecycle()
 
             ProfileSetupScreen(profileSetupState, profileSetupVM.actions) {

@@ -3,6 +3,7 @@ package me.baldo.mappit.ui.screens.profile
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import me.baldo.mappit.data.repositories.LikesRepository
 import me.baldo.mappit.data.repositories.PinsRepository
 import me.baldo.mappit.data.repositories.UsersRepository
 import me.baldo.mappit.utils.getPrettyFormatDay
+import javax.inject.Inject
 import kotlin.uuid.Uuid
 
 data class ProfileState(
@@ -44,7 +46,8 @@ interface ProfileActions {
     fun refreshProfileSilent()
 }
 
-class ProfileViewModel(
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
     private val usersRepository: UsersRepository,
     private val pinsRepository: PinsRepository,

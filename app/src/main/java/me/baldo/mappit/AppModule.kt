@@ -1,7 +1,14 @@
 package me.baldo.mappit
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.FlowType
@@ -13,65 +20,61 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
-import me.baldo.mappit.data.repositories.AuthenticationRepository
-import me.baldo.mappit.data.repositories.BookmarksRepository
-import me.baldo.mappit.data.repositories.CameraRepository
-import me.baldo.mappit.data.repositories.LikesRepository
-import me.baldo.mappit.data.repositories.PinsRepository
-import me.baldo.mappit.data.repositories.SettingsRepository
-import me.baldo.mappit.data.repositories.UsersRepository
-import me.baldo.mappit.ui.screens.addpin.AddPinViewModel
-import me.baldo.mappit.ui.screens.bookmarks.BookmarksViewModel
-import me.baldo.mappit.ui.screens.home.HomeViewModel
-import me.baldo.mappit.ui.screens.pininfo.PinInfoViewModel
-import me.baldo.mappit.ui.screens.profile.ProfileViewModel
-import me.baldo.mappit.ui.screens.profileSetup.ProfileSetupViewModel
-import me.baldo.mappit.ui.screens.settings.SettingsViewModel
-import me.baldo.mappit.ui.screens.signin.SignInViewModel
-import me.baldo.mappit.ui.screens.signup.SignUpViewModel
-import org.koin.core.module.dsl.viewModel
-import org.koin.dsl.module
-import kotlin.uuid.Uuid
+import javax.inject.Singleton
 
 private val Context.dataStore by preferencesDataStore("map")
 
-val appModule = module {
-    single { get<Context>().dataStore }
-    single {
-        createSupabaseClient(
-            supabaseUrl = BuildConfig.SUPABASE_URL,
-            supabaseKey = BuildConfig.SUPABASE_ANON_KEY
-        ) {
-            install(Postgrest)
-            install(Auth) {
-                flowType = FlowType.PKCE
-                scheme = "app"
-                host = "supabase.com"
-            }
-            install(ComposeAuth)
-            install(Storage)
+/*
+* Provides a Hilt module for singleton dependencies
+*/
+@Module
+@InstallIn(SingletonComponent::class)
+internal object HiltSingletonModule {
+    @Provides
+    @Singleton
+    fun providesPreferencesDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> = context.dataStore
+
+    @Provides
+    @Singleton
+    fun providesSupabaseClient(
+
+    ): SupabaseClient = createSupabaseClient(
+        supabaseUrl = BuildConfig.SUPABASE_URL,
+        supabaseKey = BuildConfig.SUPABASE_ANON_KEY
+    ) {
+        install(Postgrest)
+        install(Auth) {
+            flowType = FlowType.PKCE
+            scheme = "app"
+            host = "supabase.com"
         }
+        install(ComposeAuth)
+        install(Storage)
     }
-    single { get<SupabaseClient>().postgrest }
-    single { get<SupabaseClient>().auth }
-    single { get<SupabaseClient>().composeAuth }
-    single { get<SupabaseClient>().storage }
 
-    single { PinsRepository(get(), get()) }
-    single { AuthenticationRepository(get()) }
-    single { CameraRepository(get()) }
-    single { UsersRepository(get(), get()) }
-    single { SettingsRepository(get()) }
-    single { BookmarksRepository(get()) }
-    single { LikesRepository(get()) }
+    @Provides
+    @Singleton
+    fun providesPostgrest(
+        client: SupabaseClient
+    ): Postgrest = client.postgrest
 
-    viewModel { SignUpViewModel(get()) }
-    viewModel { SignInViewModel(get()) }
-    viewModel { HomeViewModel(get(), get()) }
-    viewModel { AddPinViewModel(get(), get()) }
-    viewModel { SettingsViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get(), get()) }
-    viewModel { (pinId: Uuid) -> PinInfoViewModel(pinId, get(), get(), get(), get(), get()) }
-    viewModel { (userId: Uuid) -> ProfileSetupViewModel(userId, get()) }
-    viewModel { (userId: Uuid) -> BookmarksViewModel(userId, get(), get()) }
+    @Provides
+    @Singleton
+    fun providesAuth(
+        client: SupabaseClient
+    ): Auth = client.auth
+
+    @Provides
+    @Singleton
+    fun providesComposeAuth(
+        client: SupabaseClient
+    ): ComposeAuth = client.composeAuth
+
+    @Provides
+    @Singleton
+    fun providesStorage(
+        client: SupabaseClient
+    ): Storage = client.storage
 }

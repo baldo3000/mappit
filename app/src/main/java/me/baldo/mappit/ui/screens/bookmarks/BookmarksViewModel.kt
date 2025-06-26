@@ -2,6 +2,10 @@ package me.baldo.mappit.ui.screens.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,8 +28,9 @@ interface BookmarksActions {
     fun refreshBookmarksSilent()
 }
 
-class BookmarksViewModel(
-    private val userId: Uuid,
+@HiltViewModel(assistedFactory = BookmarksViewModel.BookmarksViewModelFactory::class)
+class BookmarksViewModel @AssistedInject constructor(
+    @Assisted private val userId: Uuid,
     private val bookmarksRepository: BookmarksRepository,
     private val usersRepository: UsersRepository
 ) : ViewModel() {
@@ -70,5 +75,10 @@ class BookmarksViewModel(
 
     init {
         actions.refreshBookmarks()
+    }
+
+    @AssistedFactory
+    interface BookmarksViewModelFactory {
+        fun create(userId: Uuid): BookmarksViewModel
     }
 }

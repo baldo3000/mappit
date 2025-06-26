@@ -11,9 +11,10 @@ import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.remote.Buckets
 import me.baldo.mappit.data.remote.Tables
+import javax.inject.Inject
 import kotlin.uuid.Uuid
 
-class PinsRepository(
+class PinsRepository @Inject constructor(
     private val postgrest: Postgrest,
     private val storage: Storage
 ) {

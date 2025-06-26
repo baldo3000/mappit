@@ -2,6 +2,7 @@ package me.baldo.mappit.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -12,6 +13,7 @@ import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.repositories.CameraPositionDto
 import me.baldo.mappit.data.repositories.CameraRepository
 import me.baldo.mappit.data.repositories.PinsRepository
+import javax.inject.Inject
 
 data class HomeState(
     val pins: List<Pin> = emptyList(),
@@ -34,7 +36,8 @@ interface HomeActions {
     fun disableAllWarnings()
 }
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val pinsRepository: PinsRepository,
     private val cameraRepository: CameraRepository,
 ) : ViewModel() {

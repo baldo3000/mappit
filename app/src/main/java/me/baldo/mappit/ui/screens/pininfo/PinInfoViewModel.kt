@@ -2,6 +2,10 @@ package me.baldo.mappit.ui.screens.pininfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,8 +37,9 @@ interface PinInfoActions {
     fun deleteAvailable(): Boolean
 }
 
-class PinInfoViewModel(
-    private val pinId: Uuid,
+@HiltViewModel(assistedFactory = PinInfoViewModel.PinInfoViewModelFactory::class)
+class PinInfoViewModel @AssistedInject constructor(
+    @Assisted private val pinId: Uuid,
     private val pinsRepository: PinsRepository,
     private val usersRepository: UsersRepository,
     private val authenticationRepository: AuthenticationRepository,
@@ -130,5 +135,10 @@ class PinInfoViewModel(
                 )
             }
         }
+    }
+
+    @AssistedFactory
+    interface PinInfoViewModelFactory {
+        fun create(pinId: Uuid): PinInfoViewModel
     }
 }

@@ -6,6 +6,7 @@ import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
+import javax.inject.Inject
 
 sealed interface SignInResult {
     data object Success : SignInResult
@@ -19,7 +20,7 @@ sealed interface SignUpResult {
     data object Error : SignUpResult
 }
 
-class AuthenticationRepository(
+class AuthenticationRepository @Inject constructor(
     private val auth: Auth
 ) {
     val user: UserInfo?

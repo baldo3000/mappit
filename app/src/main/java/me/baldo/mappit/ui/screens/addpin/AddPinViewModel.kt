@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import me.baldo.mappit.data.model.AutoCompletePin
 import me.baldo.mappit.data.repositories.AuthenticationRepository
 import me.baldo.mappit.data.repositories.PinsRepository
+import javax.inject.Inject
 import kotlin.uuid.Uuid
 
 interface AddState {
@@ -35,7 +37,8 @@ interface AddPinActions {
     fun onImageChanged(image: Uri)
 }
 
-class AddPinViewModel(
+@HiltViewModel
+class AddPinViewModel @Inject constructor(
     private val pinsRepository: PinsRepository,
     private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {

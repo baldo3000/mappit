@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 data class CameraPositionDto(
     val latitude: Double,
@@ -14,7 +15,7 @@ data class CameraPositionDto(
     val bearing: Float
 )
 
-class CameraRepository(
+class CameraRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {

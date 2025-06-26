@@ -3,6 +3,7 @@ package me.baldo.mappit.ui.screens.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.baldo.mappit.R
 import me.baldo.mappit.data.repositories.SettingsRepository
+import javax.inject.Inject
 
 enum class Theme {
     LIGHT, DARK, SYSTEM;
@@ -34,7 +36,8 @@ interface SettingsActions {
     fun onAppLockChanged(appLock: Boolean)
 }
 
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState())

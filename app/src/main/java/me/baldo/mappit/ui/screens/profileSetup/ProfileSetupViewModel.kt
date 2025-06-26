@@ -3,6 +3,10 @@ package me.baldo.mappit.ui.screens.profileSetup
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,8 +29,9 @@ interface ProfileSetupActions {
     fun onAvatarChanged(image: Uri)
 }
 
-class ProfileSetupViewModel(
-    private val userId: Uuid,
+@HiltViewModel(assistedFactory = ProfileSetupViewModel.ProfileSetupViewModelFactory::class)
+class ProfileSetupViewModel @AssistedInject constructor(
+    @Assisted private val userId: Uuid,
     private val usersRepository: UsersRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(ProfileSetupState())
@@ -62,5 +67,10 @@ class ProfileSetupViewModel(
         override fun onAvatarChanged(image: Uri) {
             _state.update { it.copy(avatar = image) }
         }
+    }
+
+    @AssistedFactory
+    interface ProfileSetupViewModelFactory {
+        fun create(userId: Uuid): ProfileSetupViewModel
     }
 }

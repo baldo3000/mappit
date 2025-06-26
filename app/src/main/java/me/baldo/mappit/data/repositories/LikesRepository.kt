@@ -7,9 +7,10 @@ import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Like
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.remote.Tables
+import javax.inject.Inject
 import kotlin.uuid.Uuid
 
-class LikesRepository(
+class LikesRepository @Inject constructor(
     private val postgrest: Postgrest
 ) {
     suspend fun addLike(userId: Uuid, pinId: Uuid): Boolean {

@@ -8,9 +8,10 @@ import kotlinx.coroutines.withContext
 import me.baldo.mappit.data.model.Bookmark
 import me.baldo.mappit.data.model.Pin
 import me.baldo.mappit.data.remote.Tables
+import javax.inject.Inject
 import kotlin.uuid.Uuid
 
-class BookmarksRepository(
+class BookmarksRepository @Inject constructor(
     private val postgrest: Postgrest
 ) {
     suspend fun addBookmark(userId: Uuid, pinId: Uuid): Boolean {

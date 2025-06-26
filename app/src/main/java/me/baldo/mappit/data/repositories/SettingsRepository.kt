@@ -7,8 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import me.baldo.mappit.ui.screens.settings.Theme
+import javax.inject.Inject
 
-class SettingsRepository(
+class SettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {
